@@ -34,7 +34,6 @@
       {
         "id": "f5b54348946a2c15",
         "type": "tabs",
-        "dimension": 51.748251748251754,
         "children": [
           {
             "id": "b5b4d5a8a1505763",
@@ -74,30 +73,6 @@
               "state": {},
               "icon": "lucide-bookmark",
               "title": "书签"
-            }
-          }
-        ]
-      },
-      {
-        "id": "b9e2e6e01403075e",
-        "type": "tabs",
-        "dimension": 48.251748251748246,
-        "children": [
-          {
-            "id": "6b27b488546ff6e6",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "outline",
-              "state": {
-                "file": "AI 笔记.md",
-                "followCursor": false,
-                "showSearch": false,
-                "searchQuery": ""
-              },
-              "pinned": true,
-              "icon": "lucide-list",
-              "title": "AI 笔记 的大纲"
             }
           }
         ]
@@ -191,7 +166,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 607.5
+    "width": 200,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
