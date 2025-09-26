@@ -4,21 +4,19 @@
     "type": "split",
     "children": [
       {
-        "id": "93880d77185f6bd6",
+        "id": "000cc5982155dfa2",
         "type": "tabs",
         "children": [
           {
-            "id": "12770ec9e13f73d9",
+            "id": "1834e6772ce95156",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "excalidraw",
               "state": {
-                "file": "AI note.md",
-                "mode": "source",
-                "source": false
+                "file": "Excalidraw/Drawing 2025-09-26 02.12.13.excalidraw.md"
               },
-              "icon": "lucide-file",
-              "title": "AI note"
+              "icon": "excalidraw-icon",
+              "title": "Drawing 2025-09-26 02.12.13.excalidraw"
             }
           }
         ],
@@ -137,12 +135,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "AI note.md",
+                "file": "Excalidraw/Drawing 2025-09-26 02.12.13.excalidraw.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "AI note 的出链列表"
+              "title": "Drawing 2025-09-26 02.12.13.excalidraw 的出链列表"
             }
           },
           {
@@ -206,9 +204,11 @@
       "obsidian-excalidraw-plugin:新建绘图文件": false
     }
   },
-  "active": "12770ec9e13f73d9",
+  "active": "1834e6772ce95156",
   "lastOpenFiles": [
     "AI note.md",
+    "Excalidraw/Drawing 2025-09-26 02.12.13.excalidraw.md",
+    "Excalidraw",
     "AInote",
     "README.md",
     "mynote/rl.md",
@@ -232,7 +232,6 @@
     "copilot-custom-prompts/Generate table of contents.md",
     "未命名.base",
     "Excalidraw/Drawing 2025-09-19 20.22.38.excalidraw.md",
-    "Excalidraw",
     "copilot-custom-prompts/Explain like I am 5.md",
     "copilot-custom-prompts/Emojify.md",
     "copilot-custom-prompts/Fix grammar and spelling.md",
@@ -245,7 +244,6 @@
     "copilot-custom-prompts/Generate glossary.md",
     "copilot-custom-prompts/Make shorter.md",
     "copilot-custom-prompts/Simplify.md",
-    "copilot-custom-prompts/Translate to Chinese.md",
     "copilot-custom-prompts"
   ]
 }

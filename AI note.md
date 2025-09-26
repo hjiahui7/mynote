@@ -30,3 +30,7 @@ number headings: auto, first-level 1, max 6, 1.1
 ## 2.3 Markov decision process
 
 
+
+
+
+![[Drawing 2025-09-26 02.12.13.excalidraw]]
