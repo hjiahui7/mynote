@@ -76,6 +76,29 @@
             }
           }
         ]
+      },
+      {
+        "id": "8af94b550d153d27",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2d51a9ac3d0ad986",
+            "type": "leaf",
+            "pinned": true,
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "AI note.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "pinned": true,
+              "icon": "lucide-list",
+              "title": "AI note 的大纲"
+            }
+          }
+        ]
       }
     ],
     "direction": "horizontal",
@@ -162,7 +185,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
@@ -182,7 +205,7 @@
       "obsidian-excalidraw-plugin:新建绘图文件": false
     }
   },
-  "active": "12770ec9e13f73d9",
+  "active": "2d51a9ac3d0ad986",
   "lastOpenFiles": [
     "AI note.md",
     "AInote",
