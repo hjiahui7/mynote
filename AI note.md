@@ -20,7 +20,7 @@ number headings: auto, first-level 1, max 6, 1.1
 
 
 ## 2.1 Value-based（**c2a：Critic → Actor**）
-- **思路**：先学习值函数（QQQ 或 VVV），再用 **greedy / ϵ\epsilonϵ-greedy / softmax** 从值函数**导出**策略。
+- **思路**：先学习值函数（Q 或 VVV），再用 **greedy / ϵ\epsilonϵ-greedy / softmax** 从值函数**导出**策略。
 - **代表**：MC Control、SARSA、Expected SARSA、Q-learning、DQN（+ 目标网络/重放/Double-Q）。
 - **优点**：离散动作简单高效。
 - **局限**：连续动作 arg⁡max⁡aQ\arg\max_a Qargmaxa​Q 困难；策略不可直接正则化。
