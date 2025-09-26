@@ -114,12 +114,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "AI 笔记.md",
+                "file": "AI note.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "AI 笔记 的出链列表"
+              "title": "AI note 的出链列表"
             }
           },
           {
@@ -162,12 +162,11 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 644.5
   },
   "left-ribbon": {
     "hiddenItems": {
