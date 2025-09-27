@@ -35,6 +35,7 @@ number headings: auto, first-level 1, max 6, 1.1
 
 - **马尔可夫决策过程**（Markov Decision Process, **MDP**）是在马尔可夫链的基础上引入了动作（A）和奖励（R）的概念。
 - markov chain
+- dfdf
 
 
 
