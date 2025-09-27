@@ -5,9 +5,8 @@ number headings: auto, first-level 1, max 6, 1.1
 
 # 1 RL 知识梳理
 
-
 ## 1.1 Top Down
-![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=MzhiMmZlMzQwNDBhOTQxN2M0YjJhMTE3ZmVlNzk3Y2RfcDc0eFVMR1hYSFBUQ284MEYwcnZlWHpVd20yQnhMdlhfVG9rZW46THZNc2JmeFZ0b2tzeUV4SDdBWmxzQ3NPZ1FkXzE3NTg4NzYzNDA6MTc1ODg3OTk0MF9WNA)
+![[Pasted image 20250927014929.png]]
 
 # 2 统一框架（总览）
 

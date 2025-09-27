@@ -11,12 +11,14 @@
             "id": "1834e6772ce95156",
             "type": "leaf",
             "state": {
-              "type": "excalidraw",
+              "type": "markdown",
               "state": {
-                "file": "Excalidraw/Drawing 2025-09-26 02.12.13.excalidraw.md"
+                "file": "AI note.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "excalidraw-icon",
-              "title": "Drawing 2025-09-26 02.12.13.excalidraw"
+              "icon": "lucide-file",
+              "title": "AI note"
             }
           }
         ],
@@ -135,12 +137,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Excalidraw/Drawing 2025-09-26 02.12.13.excalidraw.md",
+                "file": "AI note.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Drawing 2025-09-26 02.12.13.excalidraw 的出链列表"
+              "title": "AI note 的出链列表"
             }
           },
           {
@@ -187,8 +189,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 364.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -206,14 +207,33 @@
   },
   "active": "1834e6772ce95156",
   "lastOpenFiles": [
+    "images/Pasted image 20250927014929.png",
+    "images/Pasted image 20250927014154.png",
     "AI note.md",
+    "mynote/Excalidraw/Drawing 2025-09-26 02.12.13.excalidraw.md",
+    "mynote/Excalidraw",
+    "mynote/copilot-custom-prompts/Rewrite as tweet thread.md",
+    "mynote/copilot-custom-prompts/Translate to Chinese.md",
+    "mynote/copilot-custom-prompts/Summarize.md",
+    "mynote/copilot-custom-prompts/Simplify.md",
+    "mynote/copilot-custom-prompts/Rewrite as tweet.md",
+    "mynote/copilot-custom-prompts/Make shorter.md",
+    "mynote/copilot-custom-prompts/Remove URLs.md",
+    "mynote/copilot-custom-prompts/Make longer.md",
+    "mynote/copilot-custom-prompts/Generate table of contents.md",
+    "mynote/copilot-custom-prompts/Generate glossary.md",
+    "mynote/copilot-custom-prompts/Fix grammar and spelling.md",
+    "mynote/copilot-custom-prompts/Explain like I am 5.md",
+    "mynote/copilot-custom-prompts/Emojify.md",
+    "mynote/copilot-custom-prompts",
+    "mynote",
+    "images",
     "Excalidraw/Drawing 2025-09-26 02.12.13.excalidraw.md",
     "Excalidraw",
     "AInote",
     "README.md",
     "mynote/rl.md",
     "mynote/未命名",
-    "mynote",
     "mynote.git~",
     "AI 笔记.md",
     "未命名 2.canvas",
@@ -225,25 +245,10 @@
     "Drawing 2025-09-19 20.30.29.excalidraw.md",
     "Excalidraw/Drawing 2025-09-19 21.37.46.excalidraw.md",
     "Excalidraw/Drawing 2025-09-19 21.37.38.excalidraw.md",
-    "copilot-custom-prompts/Rewrite as tweet thread.md",
     "未命名.canvas",
-    "copilot-custom-prompts/Make longer.md",
-    "Excalidraw/欢迎 2025-09-19 20.23.50.excalidraw.md",
-    "copilot-custom-prompts/Generate table of contents.md",
     "未命名.base",
-    "Excalidraw/Drawing 2025-09-19 20.22.38.excalidraw.md",
-    "copilot-custom-prompts/Explain like I am 5.md",
-    "copilot-custom-prompts/Emojify.md",
-    "copilot-custom-prompts/Fix grammar and spelling.md",
-    "创建链接.md",
     "Pasted image 20250919200732.png",
     "未命名 3.canvas",
-    "copilot-custom-prompts/Summarize.md",
-    "copilot-custom-prompts/Rewrite as tweet.md",
-    "copilot-custom-prompts/Remove URLs.md",
-    "copilot-custom-prompts/Generate glossary.md",
-    "copilot-custom-prompts/Make shorter.md",
-    "copilot-custom-prompts/Simplify.md",
     "copilot-custom-prompts"
   ]
 }
