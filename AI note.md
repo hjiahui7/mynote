@@ -24,6 +24,9 @@ number headings: auto, first-level 1, max 6, 1.1
 - **代表**：MC Control、SARSA、Expected SARSA、Q-learning、DQN（+ 目标网络/重放/Double-Q）。
 - **优点**：离散动作简单高效。
 - **局限**：连续动作 arg⁡max⁡aQ\arg\max_a Qargmaxa​Q 困难；策略不可直接正则化。
+### 2.1.1 Monte Carlo
+
+### 2.1.2 Temporal Difference
 
 ## 2.2 Policy-based（**a2c：Actor → Critic**）
 - **思路**：- 直接学习一个参数化的策略函数 \(\pi_\theta(a|s)\)，用梯度上升最大化期望回报。  策略可以是概率分布（分类/高斯），所以能自然地输出离散或连续动作。 不依赖“从值函数再推导”，而是直接调整“行为概率”。  
@@ -35,9 +38,9 @@ number headings: auto, first-level 1, max 6, 1.1
 
 - **马尔可夫决策过程**（Markov Decision Process, **MDP**）是在马尔可夫链的基础上引入了动作（A）和奖励（R）的概念。
 
-## 2.4 Monte Carlo 
+## 2.4 
 
-## 2.5 Temporal Difference
+## 2.5 
 
 
 
