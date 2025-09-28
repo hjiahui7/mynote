@@ -198,10 +198,11 @@
       "bases:创建新数据库": false,
       "obsidian-git:Open Git source control": false,
       "copilot:Open Copilot Chat": false,
-      "obsidian-excalidraw-plugin:新建绘图文件": false
+      "obsidian-excalidraw-plugin:新建绘图文件": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "2d51a9ac3d0ad986",
+  "active": "1834e6772ce95156",
   "lastOpenFiles": [
     "README.md",
     "AI note.md",
