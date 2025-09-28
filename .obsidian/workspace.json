@@ -184,7 +184,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 448.5
+    "width": 448.5,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -201,7 +202,7 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "608f1de6c9304de7",
+  "active": "1834e6772ce95156",
   "lastOpenFiles": [
     "README.md",
     "AI note.md",
