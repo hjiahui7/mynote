@@ -781,6 +781,14 @@ PPO 一轮训练（按图逐步，逐 token 写法；所有公式均为显示型
 
 为只在“生成段”上训练，引入掩码 \(\text{mask}_{i,t}\in\{0,1\}\)（提示 token 置 0，生成 token 置 1）。令
 $$
+
+- 状态与动作：
+  $$s_{i,t}=(q_i,\, o_{i,<t}),\quad a_{i,t}=o_{i,t}.$$
+- 策略与价值：冻结行为策略 \(\pi_{\mathrm{old}}\)，当前可训练策略 $$\pi_\theta$$$$，参考模型 \(\pi_{\mathrm{ref}}\)，价值网络 \(V_\phi\)。
+- 仅对“生成段”计算损失（prompt token 被 mask）。
+
+
+
 M \;=\; \sum_{i=1}^B \sum_{t=1}^{T_i} \text{mask}_{i,t}
 $$
 表示本批参与优化的 token 总数。
