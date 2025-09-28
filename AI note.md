@@ -42,10 +42,10 @@ https://www.bilibili.com/video/BV1rooaYVEk8/?spm_id_from=333.1387.homepage.video
 ## 3.1 Top down
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=OTg4YmU4M2ZiMDIyZjZlNGRkOTUxMDlkOWRkOWIwOWRfNGNqa2h4dlhEQWZaeTZ4OHEwSnpYRnEwYnNsYXlUbzhfVG9rZW46THZNc2JmeFZ0b2tzeUV4SDdBWmxzQ3NPZ1FkXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
-2.  Markov decision process
+## 3.2 Markov decision process
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=MWI2ZTdlMDBlYTBjMDE2ODAzM2IwZWQ0NTVlMGQ3ZjFfVXUwOHhMSXE3NU5laDZGT0lPVUs0VTl5YjNBMUpUc3VfVG9rZW46RW55SGJFRVdOb2ZFdHN4R3ROQmxDR3YzZ1ZmXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
-3.  State Value & Action Value
+## 3.3 State Value & Action Value
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=Yjc3NmZjNGVjMjQyMGY4ODE4ZmQwM2JkYTBmNTdjMGRfMzBUQ2x3WmU0NU9MUWhmWE5Od0pHdXFHb0FuUURiQ0ZfVG9rZW46WE9DOWJEOTBIbzBMQlB4RlQ3emxhcmkxZ2ZjXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
@@ -53,24 +53,15 @@ https://www.bilibili.com/video/BV1rooaYVEk8/?spm_id_from=333.1387.homepage.video
 **Note:**
 
 1. **价值函数 (Value) V**： 在状态 s 下，按照策略走下去的**总回报**。
-    
-
-V(s)=R(s 起点往后算的总回报)
-
+	V(s)=R(s 起点往后算的总回报)
 2. **动作价值函数 (Q-value) Q**： 在状态 s 下，先选动作 a，再按照策略走下去的**总回报**。
-    
-
-Q(s,a)=R(s,a 起点往后算的总回报)
-
+	Q(s,a)=R(s,a 起点往后算的总回报)
 3. **优势函数 (Advantage) A**： 动作 a 相比于该状态平均水平的好坏。
-    
-
-A(s,a)=Q(s,a)−V(s)
+	A(s,a)=Q(s,a)−V(s)
 
 4. 直观关系
     
     1. V(s)可以看成“平均水平”。
-        
     2. Q(s,a) 是“指定动作的分数”。
         
     3. A(s,a)就是“指定动作分数 − 平均水平”。
@@ -319,7 +310,7 @@ TD的算法有SARSA and Q learning
         2. $$[Q(s_t,a_1), Q(s_t,a_2), \dots, Q(s_t,a_n)]$$
             
         
-            📌 注意：不用一个一个传入 action，而是一次前向传播就得到所有动作的 Q 值。
+    📌 注意：不用一个一个传入 action，而是一次前向传播就得到所有动作的 Q 值。
         
     4. 动作选择 (ε-greedy)
         
@@ -689,8 +680,7 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
     5. 结束后把 $$\pi_{\text{old}}\leftarrow \pi_{\theta}$$，进入下一批。
         
 
-5.  PPO LLM
-    
+## 3.4 PPO LLM
 
 ┌──────────────────────────────┐
 
@@ -766,7 +756,7 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
 
 └──────────────────────────────┘
 
-1.  PPO
+### 3.4.1 PPO
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=MmUyZDE5MWE3ZTNmOGFkY2M2OGRiYTkyMjBhZDY4ZDVfS3dBYlZ5bEltZE84cW0wb2ljQlYyTFpjbEtzY3hvNE9fVG9rZW46STFWdGJ5ZXZlb1kyb0l4Z2lBYmw1VzkxZzZiXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
@@ -776,115 +766,153 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=OWI2NzAzNWFmOWJhNjExZWEzNTEwYWY3YTExYjYyOGFfMlhwTjVldGRiUWtMd09DSmFrMDFZMUQyd2dXVFVsU2tfVG9rZW46RXNhQ2JCMm9ab2VJQVd4OFV0OWwzbkRVZ2NnXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
 
-PPO 一轮训练（基于示例：
-Prompt q = "Eric has a banana"
-Reply tokens = "␠No", ",", "␠Yuxuan", "␠steal", "␠it", ",", "␠so", "␠Eric", "␠has", "␠zero", "."）
+
+PPO 一轮训练（按图逐步，逐 token 写法；所有公式均为显示型
+
+我们以单个 batch（索引 i=1..B），每条序列的生成长度为 T_i，token 级状态与动作定义为：
+- 状态：\(s_{i,t}=(q_i, o_{i,<t})\)$$
+- 动作：\(a_{i,t}=o_{i,t}\)
+
+本轮包含四个模型：
+- 行为策略（冻结快照）\(\pi_{\text{old}}\)
+- 当前可训练策略 \(\pi_\theta\)
+- 参考模型 \(\pi_{\text{ref}}\)
+- 价值网络 \(V_\phi\)
+
+为只在“生成段”上训练，引入掩码 \(\text{mask}_{i,t}\in\{0,1\}\)（提示 token 置 0，生成 token 置 1）。令
+$$
+M \;=\; \sum_{i=1}^B \sum_{t=1}^{T_i} \text{mask}_{i,t}
+$$
+表示本批参与优化的 token 总数。
 
 ----------------------------------------
-0) 记号（逐 token）
+1) 冻结与 Rollout（仅用 \(\pi_{\text{old}}\) 采样）
 ----------------------------------------
-- 状态：\(s_t=(q, o_{<t})\)，其中 \(o_{<t}\) 是已生成的前缀；动作：\(a_t=o_t\)（第 t 个 token）。
-- 行为策略（冻结快照）：\(\pi_{\text{old}}\)；当前可训练策略：\(\pi_\theta\)；参考模型：\(\pi_{\text{ref}}\)；价值网络：\(V_\phi\)。
-- 本轮 rollout 只用 \(\pi_{\text{old}}\) 生成；更新时仅在生成段（mask 掉 prompt token）上计算损失。
+用 \(\pi_{\text{old}}\) 对每个 \(q_i\) 自回归生成 \(o_{i,1:T_i}\)。同时缓存：
+$$
+\log \pi_{\text{old}}(a_{i,t}\mid s_{i,t}),\qquad
+\log \pi_{\text{ref}}(a_{i,t}\mid s_{i,t}).
+$$
+
+（优化阶段再前向一次 \(\pi_\theta\) 得到 \(\log \pi_\theta(a_{i,t}\mid s_{i,t})\)。）
 
 ----------------------------------------
-1) Rollout（用 \(\pi_{\text{old}}\) 生成并缓存对数概率）
+2) 即时奖励（KL 奖励整形 + 末端 RM）
 ----------------------------------------
-对 t = 1..T：缓存
-\[\log \pi_{\text{old}}(a_t \mid s_t),\qquad \log \pi_{\text{ref}}(a_t \mid s_t).\]
-（若需要，可在优化阶段再前向一次 \(\pi_\theta\) 得 \(\log \pi_\theta(a_t \mid s_t)\)。）
+单步 KL 近似：
+$$
+\mathrm{KL}_{i,t}\;\approx\; \log \pi_{\text{old}}(a_{i,t}\mid s_{i,t}) \;-\; \log \pi_{\text{ref}}(a_{i,t}\mid s_{i,t}).
+$$
 
-示例定位：
-- 当 \(a_t=\text{`␠zero`}\) 时：\(s_t=(q,\text{`␠No`},`,`,\dots,\text{`␠has`})\)。
-
-----------------------------------------
-2) 即时奖励：KL 奖励整形 + 末端 RM
-----------------------------------------
-定义单步 KL 近似：
-\[\mathrm{KL}_t \;\approx\; \log \pi_{\text{old}}(a_t\mid s_t)\;-\;\log \pi_{\text{ref}}(a_t\mid s_t).\]
-
-逐步即时奖励：
-\[
-r_t = 
+逐步即时奖励（若仅末端有 RM 打分）：
+$$
+r_{i,t} \;=\;
 \begin{cases}
--\beta \cdot \mathrm{KL}_t, & t<T,\\[3pt]
-R_\psi\!\big(q, o_{1:T}\big)\;-\;\beta \cdot \mathrm{KL}_T, & t=T.
+-\beta \cdot \mathrm{KL}_{i,t}, & t<T_i,\\[6pt]
+R_\psi\!\big(q_i, o_{i,1:T_i}\big)\;-\;\beta \cdot \mathrm{KL}_{i,T_i}, & t=T_i.
 \end{cases}
-\]
-这里 \(R_\psi\) 是奖励模型对整句的评分。
+$$
 
-（若选择把 KL 放在损失里而不是奖励里，则本步将 \(r_t\) 仅含任务奖励；在第 5) 步中加入 \(\beta\cdot \mathrm{KL}(\pi_\theta||\pi_{\text{ref}})\)。两种写法目的等价，择一即可。）
+（若采用“KL 放入损失”而非奖励：此处令 \(r_{i,t}\) 仅含任务奖励；见第 5) 的 \(L_{\mathrm{KL}}\)。两种写法择其一即可，目的等价。）
 
 ----------------------------------------
 3) Critic 目标：TD、GAE 与回报
 ----------------------------------------
-设文本任务常用 \(\gamma=1\)，并令 \(V_\phi(s_{T+1})=0\)。
+设文本任务常用 \(\gamma=1\)，并置 \(V_\phi(s_{i,T_i+1})=0\)。
 
 TD 残差：
-\[\delta_t \;=\; r_t \;+\; \gamma\, V_\phi(s_{t+1}) \;-\; V_\phi(s_t).\]
+$$
+\delta_{i,t} \;=\; r_{i,t} \;+\; \gamma\,V_\phi(s_{i,t+1}) \;-\; V_\phi(s_{i,t}).
+$$
 
-GAE（从后向前递推）：
-\[\hat A_T = \delta_T,\qquad \hat A_t \;=\; \delta_t \;+\; \gamma\lambda\,\hat A_{t+1}\quad (t=T-1,\dots,1).\]
+GAE（从后向前递推；\(\hat A_{i,T_i+1}=0\)）：
+$$
+\hat A_{i,t} \;=\; \delta_{i,t} \;+\; \gamma\lambda\,\hat A_{i,t+1}\,,\qquad t=T_i,\dots,1.
+$$
 
 用于 value 的监督回报：
-\[\hat G_t \;=\; \hat A_t \;+\; V_\phi(s_t).\]
+$$
+\hat G_{i,t} \;=\; \hat A_{i,t} \;+\; V_\phi(s_{i,t}).
+$$
 
-对本批所有“生成 token”的优势做标准化：
-\[\hat A \;\leftarrow\; \frac{\hat A - \mathrm{mean}(\hat A)}{\mathrm{std}(\hat A)+\varepsilon}.\]
+对本批所有生成 token 的优势做标准化：
+$$
+\mu_A \;=\; \frac{1}{M}\!\sum_{i,t}\!\text{mask}_{i,t}\,\hat A_{i,t},\qquad
+\sigma_A \;=\; \sqrt{\frac{1}{M}\!\sum_{i,t}\!\text{mask}_{i,t}\,\big(\hat A_{i,t}-\mu_A\big)^2+\varepsilon},
+$$
+$$
+\hat A_{i,t} \;\leftarrow\; \frac{\hat A_{i,t}-\mu_A}{\sigma_A}\quad \text{(仅当 }\text{mask}_{i,t}=1\text{ 时生效)}.
+$$
 
 ----------------------------------------
 4) Actor（PPO-clip）
 ----------------------------------------
-计算策略比值（注意此处 r 用作“reward”的记号已占用，因此用 \(\rho_t\) 表示概率比）：
-\[\rho_t \;=\; \frac{\pi_\theta(a_t\mid s_t)}{\pi_{\text{old}}(a_t\mid s_t)}
-\;=\;\exp\!\Big(\log \pi_\theta(a_t\mid s_t) - \log \pi_{\text{old}}(a_t\mid s_t)\Big).\]
+概率比（IS 比值）：
+$$
+\rho_{i,t} \;=\; \frac{\pi_\theta(a_{i,t}\mid s_{i,t})}{\pi_{\text{old}}(a_{i,t}\mid s_{i,t})}
+\;=\; \exp\!\Big(\log \pi_\theta(a_{i,t}\mid s_{i,t}) - \log \pi_{\text{old}}(a_{i,t}\mid s_{i,t})\Big).
+$$
 
-策略目标（在生成 token 上取平均）：
-\[
-L_{\text{policy}}(\theta) \;=\;
-\frac{1}{M}\sum_{t}\min\!\Big(\rho_t\,\hat A_t,\; \mathrm{clip}(\rho_t,\,1-\epsilon,\,1+\epsilon)\,\hat A_t\Big).
-\]
+策略目标（只在生成 token 上求平均）：
+$$
+L_{\text{policy}}(\theta)
+\;=\; \frac{1}{M}\sum_{i,t}\text{mask}_{i,t}\;
+\min\!\Big(\rho_{i,t}\,\hat A_{i,t},\; \mathrm{clip}\big(\rho_{i,t},\,1-\epsilon,\,1+\epsilon\big)\,\hat A_{i,t}\Big).
+$$
 
-示例化一条（token = `␠zero`）：
-\[\rho_t \;=\; \frac{\pi_\theta(\text{`␠zero`}\mid s_t)}{\pi_{\text{old}}(\text{`␠zero`}\mid s_t)}.\]
+对于例子里 token “\(\,\text{zero}\,\)”所在步（某个 \(i,t\)）：
+$$
+\rho_{i,t} \;=\; \frac{\pi_\theta(\text{zero}\mid s_{i,t})}{\pi_{\text{old}}(\text{zero}\mid s_{i,t})}.
+$$
 
 ----------------------------------------
 5) 其他项：Value / Entropy /（可选）KL-in-loss
 ----------------------------------------
 Value 损失：
-\[L_{\text{value}}(\phi) \;=\; \frac{1}{M}\sum_t \tfrac{1}{2}\,\big(V_\phi(s_t) - \hat G_t\big)^2.\]
-（可选 value-clip：将 \(V_\phi\) 的更新限幅以防过拟合。）
+$$
+L_{\text{value}}(\phi)
+\;=\; \frac{1}{M}\sum_{i,t}\text{mask}_{i,t}\;\frac{1}{2}\,\Big(V_\phi(s_{i,t}) - \hat G_{i,t}\Big)^2.
+$$
 
-熵正则（鼓励多样性）：
-\[L_{\text{ent}}(\theta) \;=\; -\,\frac{1}{M}\sum_t \mathcal{H}\!\big(\pi_\theta(\cdot\mid s_t)\big).\]
+熵正则（使用你给定的格式）：
+$$
+H\!\big(\pi_\theta(\cdot \mid s_{i,t})\big)
+\;=\;
+-\sum_{a}\pi_\theta(a\mid s_{i,t})\,\log \pi_\theta(a\mid s_{i,t}).
+$$
+故
+$$
+L_{\text{ent}}(\theta)
+\;=\;
+-\frac{1}{M}\sum_{i,t}\text{mask}_{i,t}\;H\!\big(\pi_\theta(\cdot \mid s_{i,t})\big).
+$$
 
-若采用“KL 放在损失里”的变体，额外加入：
-\[L_{\text{KL}}(\theta) \;=\; \frac{1}{M}\sum_t \mathrm{KL}\!\big(\pi_\theta(\cdot\mid s_t)\,\big\|\,\pi_{\text{ref}}(\cdot\mid s_t)\big).\]
+（可选）把 KL 放进损失（与第 2) 二选一）：
+$$
+L_{\mathrm{KL}}(\theta)
+\;=\; \frac{1}{M}\sum_{i,t}\text{mask}_{i,t}\;
+\mathrm{KL}\!\big(\pi_\theta(\cdot\mid s_{i,t})\,\big\|\,\pi_{\text{ref}}(\cdot\mid s_{i,t})\big)
+\;=\; \frac{1}{M}\sum_{i,t}\text{mask}_{i,t}\;\sum_a \pi_\theta(a\mid s_{i,t})\,
+\log \frac{\pi_\theta(a\mid s_{i,t})}{\pi_{\text{ref}}(a\mid s_{i,t})}.
+$$
 
-总损失（最小化形式；若 KL 已放入奖励，则可不加最后一项）：
-\[\min_{\theta,\phi}\;\; -\,L_{\text{policy}} \;+\; c_v\,L_{\text{value}} \;-\; c_H\,L_{\text{ent}} \;+\; \beta\,L_{\text{KL}}.\]
+总损失（最小化；若第 2) 已把 KL 放入奖励，则可令 \(\beta=0\) 省略最后一项）：
+$$
+\min_{\theta,\phi}\;\; -\,L_{\text{policy}}(\theta)\;+\;c_v\,L_{\text{value}}(\phi)\;-\;c_H\,L_{\text{ent}}(\theta)\;+\;\beta\,L_{\mathrm{KL}}(\theta).
+$$
 
 ----------------------------------------
-6) 训练细节（本批多轮，小批 SGD）
+6) 训练循环（本批多轮、小批 SGD）
 ----------------------------------------
-- 将本批所有生成 token 展平、打乱；按小批做 \(K\) 个 epoch 的 AdamW 更新；梯度裁剪（如 1.0）。
-- 仅对生成段计损失（prompt token 需 mask）。
+- 将所有 \(\text{mask}_{i,t}=1\) 的位置展平打乱；
+- 进行 \(K\) 个 epoch 的小批 SGD（AdamW、梯度裁剪等）；
+- 仅在生成 token 上计算与回传梯度。
 
 ----------------------------------------
 7) 轮末处理
 ----------------------------------------
 - 丢弃本批数据；
 - 刷新行为策略：\(\pi_{\text{old}} \leftarrow \pi_\theta\)；
-- 开始下一轮：用新的 \(\pi_{\text{old}}\) 重新 rollout，重复 1)–7)。
+- 开始下一轮，从步骤 1) 重新 rollout。
 
-----------------------------------------
-8) 结合示例的“局部展开”
-----------------------------------------
-取 token = `␠zero` 这一步：
-- KL 奖励分量：
-\[\ r_t^{\mathrm{KL}} \;=\; -\beta\Big[\log \pi_{\text{old}}(\text{`␠zero`}\mid s_t) - \log \pi_{\text{ref}}(\text{`␠zero`}\mid s_t)\Big].\]
-- 若该步为最终 token（句号之前），还会把 \(R_\psi(q,o_{1:T})\) 加到该位置的 \(r_t\) 中。
-- TD/GAE 使用所有 \(r_t\) 与 \(V_\phi(\cdot)\) 递推出 \(\hat A_t\)；
-- Actor 用
-\[\min\Big(\rho_t\hat A_t,\ \mathrm{clip}(\rho_t,1-\epsilon,1+\epsilon)\hat A_t\Big)\]
-对 \(\log \pi_\theta(\text{`␠zero`}\mid s_t)\) 产生梯度；若 \(\hat A_t>0\) 且未触发 clip，则梯度会增大该条件概率。
+（完）
