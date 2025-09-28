@@ -123,7 +123,7 @@
       "key": "Delete"
     }
   ],
-  "editor:set-heading": [
+  "editor:set-heading-0": [
     {
       "modifiers": [
         "Alt",
@@ -132,7 +132,7 @@
       "key": "`"
     }
   ],
-  "editor:set-heading-0": [
+  "editor:set-heading": [
     {
       "modifiers": [
         "Alt",
