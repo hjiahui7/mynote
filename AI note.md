@@ -767,110 +767,80 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
 
 
 
-PPO 一轮训练（按图逐步，逐 token 写法；所有公式均为显示型
+PPO 一轮训练（逐 token，无期望写法；全部数学用 $$...$$ 包裹）
 
-我们以单个 batch（索引 i=1..B），每条序列的生成长度为 T_i，token 级状态与动作定义为：
-- 状态：\(s_{i,t}=(q_i, o_{i,<t})\)$$
-- 动作：\(a_{i,t}=o_{i,t}\)
-
-本轮包含四个模型：
-- 行为策略（冻结快照）\(\pi_{\text{old}}\)
-- 当前可训练策略 \(\pi_\theta\)
-- 参考模型 \(\pi_{\text{ref}}\)
-- 价值网络 \(V_\phi\)
-
-为只在“生成段”上训练，引入掩码 \(\text{mask}_{i,t}\in\{0,1\}\)（提示 token 置 0，生成 token 置 1）。令
-$$
-
-- 状态与动作：
-  $$s_{i,t}=(q_i,\, o_{i,<t}),\quad a_{i,t}=o_{i,t}.$$
-- 策略与价值：冻结行为策略 \(\pi_{\mathrm{old}}\)，当前可训练策略 $$\pi_\theta$$$$，参考模型 \(\pi_{\mathrm{ref}}\)，价值网络 \(V_\phi\)。
-- 仅对“生成段”计算损失（prompt token 被 mask）。
-
-
-
-M \;=\; \sum_{i=1}^B \sum_{t=1}^{T_i} \text{mask}_{i,t}
-$$
-表示本批参与优化的 token 总数。
+【任务/示例】
+Prompt $$q_i$$ = "Eric has a banana"；用冻结的 $$\pi_{\mathrm{old}}$$ 生成回复
+$$o_{i,1:T_i}=$$ "␠No", ",", "␠Yuxuan", "␠steal", "␠it", ",", "␠so", "␠Eric", "␠has", "␠zero", "."。
 
 ----------------------------------------
-1) 冻结与 Rollout（仅用 \(\pi_{\text{old}}\) 采样）
+0) 记号（与图片一致）
 ----------------------------------------
-用 \(\pi_{\text{old}}\) 对每个 \(q_i\) 自回归生成 \(o_{i,1:T_i}\)。同时缓存：
-$$
-\log \pi_{\text{old}}(a_{i,t}\mid s_{i,t}),\qquad
-\log \pi_{\text{ref}}(a_{i,t}\mid s_{i,t}).
-$$
-
-（优化阶段再前向一次 \(\pi_\theta\) 得到 \(\log \pi_\theta(a_{i,t}\mid s_{i,t})\)。）
+状态与动作：
+$$s_{i,t}=(q_i,\, o_{i,<t}),\quad a_{i,t}=o_{i,t}.$$
+策略与价值：冻结行为策略 $$\pi_{\mathrm{old}}$$，当前可训练策略 $$\pi_\theta$$，参考模型 $$\pi_{\mathrm{ref}}$$，价值网络 $$V_\phi$$。
+仅对“生成段”计算损失（prompt token 被 mask）。
 
 ----------------------------------------
-2) 即时奖励（KL 奖励整形 + 末端 RM）
+1) Rollout：用 $$\pi_{\mathrm{old}}$$ 逐 token 生成并缓存对数概率
 ----------------------------------------
-单步 KL 近似：
-$$
-\mathrm{KL}_{i,t}\;\approx\; \log \pi_{\text{old}}(a_{i,t}\mid s_{i,t}) \;-\; \log \pi_{\text{ref}}(a_{i,t}\mid s_{i,t}).
-$$
+对每个样本 $$i$$、每个生成步 $$t=1..T_i$$，缓存：
+$$\log \pi_{\mathrm{old}}(a_{i,t}\mid s_{i,t}),\qquad \log \pi_{\mathrm{ref}}(a_{i,t}\mid s_{i,t}).$$
 
-逐步即时奖励（若仅末端有 RM 打分）：
+示例中的 “␠zero” 步：
+$$s_{i,t}=(q_i,\text{`␠No`},`,`,\ldots,\text{`␠has`}),\quad a_{i,t}=\text{`␠zero`}.$$
+
+----------------------------------------
+2) 奖励整形（KL in reward）+ 末端奖励模型
+----------------------------------------
+单样本 KL 近似：
+$$\mathrm{KL}_{i,t}\ \approx\ \log \pi_{\mathrm{old}}(a_{i,t}\!\mid s_{i,t})\;-\;\log \pi_{\mathrm{ref}}(a_{i,t}\!\mid s_{i,t}).$$
+
+逐步即时奖励：
 $$
-r_{i,t} \;=\;
+r_{i,t}=
 \begin{cases}
--\beta \cdot \mathrm{KL}_{i,t}, & t<T_i,\\[6pt]
-R_\psi\!\big(q_i, o_{i,1:T_i}\big)\;-\;\beta \cdot \mathrm{KL}_{i,T_i}, & t=T_i.
+-\beta\,\mathrm{KL}_{i,t}, & t<T_i,\\[4pt]
+R_\psi\!\big(q_i,\,o_{i,1:T_i}\big)\;-\;\beta\,\mathrm{KL}_{i,T_i}, & t=T_i.
 \end{cases}
 $$
 
-（若采用“KL 放入损失”而非奖励：此处令 \(r_{i,t}\) 仅含任务奖励；见第 5) 的 \(L_{\mathrm{KL}}\)。两种写法择其一即可，目的等价。）
+（若改用“KL in loss”，则此处 $$r_{i,t}$$ 不含 KL，改在第 5) 步加入 $$\beta\,\mathrm{KL}(\pi_\theta\|\pi_{\mathrm{ref}})$$。两种写法择一即可。）
 
 ----------------------------------------
-3) Critic 目标：TD、GAE 与回报
+3) Critic 目标：TD、GAE 与回报（常取 $$\gamma=1$$）
 ----------------------------------------
-设文本任务常用 \(\gamma=1\)，并置 \(V_\phi(s_{i,T_i+1})=0\)。
+设 $$V_\phi(s_{i,T_i+1})=0$$。
 
 TD 残差：
+$$\delta_{i,t}=r_{i,t}+\gamma\,V_\phi(s_{i,t+1})-V_\phi(s_{i,t}).$$
+
+GAE 递推（从后往前）：
 $$
-\delta_{i,t} \;=\; r_{i,t} \;+\; \gamma\,V_\phi(s_{i,t+1}) \;-\; V_\phi(s_{i,t}).
+\hat A_{i,T_i}=\delta_{i,T_i},\qquad
+\hat A_{i,t}=\delta_{i,t}+\gamma\lambda\,\hat A_{i,t+1}\quad (t=T_i-1,\ldots,1).
 $$
 
-GAE（从后向前递推；\(\hat A_{i,T_i+1}=0\)）：
-$$
-\hat A_{i,t} \;=\; \delta_{i,t} \;+\; \gamma\lambda\,\hat A_{i,t+1}\,,\qquad t=T_i,\dots,1.
-$$
+Value 的监督目标（回报）：
+$$\hat G_{i,t}=\hat A_{i,t}+V_\phi(s_{i,t}).$$
 
-用于 value 的监督回报：
-$$
-\hat G_{i,t} \;=\; \hat A_{i,t} \;+\; V_\phi(s_{i,t}).
-$$
-
-对本批所有生成 token 的优势做标准化：
-$$
-\mu_A \;=\; \frac{1}{M}\!\sum_{i,t}\!\text{mask}_{i,t}\,\hat A_{i,t},\qquad
-\sigma_A \;=\; \sqrt{\frac{1}{M}\!\sum_{i,t}\!\text{mask}_{i,t}\,\big(\hat A_{i,t}-\mu_A\big)^2+\varepsilon},
-$$
-$$
-\hat A_{i,t} \;\leftarrow\; \frac{\hat A_{i,t}-\mu_A}{\sigma_A}\quad \text{(仅当 }\text{mask}_{i,t}=1\text{ 时生效)}.
-$$
+对本批所有“生成 token”的优势做标准化（展平总数为 $$M=\sum_i T_i$$）：
+$$\hat A \leftarrow \frac{\hat A-\mathrm{mean}(\hat A)}{\mathrm{std}(\hat A)+\varepsilon}.$$
 
 ----------------------------------------
 4) Actor（PPO-clip）
 ----------------------------------------
-概率比（IS 比值）：
+策略概率比：
 $$
-\rho_{i,t} \;=\; \frac{\pi_\theta(a_{i,t}\mid s_{i,t})}{\pi_{\text{old}}(a_{i,t}\mid s_{i,t})}
-\;=\; \exp\!\Big(\log \pi_\theta(a_{i,t}\mid s_{i,t}) - \log \pi_{\text{old}}(a_{i,t}\mid s_{i,t})\Big).
-$$
-
-策略目标（只在生成 token 上求平均）：
-$$
-L_{\text{policy}}(\theta)
-\;=\; \frac{1}{M}\sum_{i,t}\text{mask}_{i,t}\;
-\min\!\Big(\rho_{i,t}\,\hat A_{i,t},\; \mathrm{clip}\big(\rho_{i,t},\,1-\epsilon,\,1+\epsilon\big)\,\hat A_{i,t}\Big).
+\rho_{i,t}
+=\frac{\pi_\theta(a_{i,t}\!\mid s_{i,t})}{\pi_{\mathrm{old}}(a_{i,t}\!\mid s_{i,t})}
+=\exp\!\Big(\log\pi_\theta(a_{i,t}\!\mid s_{i,t})-\log\pi_{\mathrm{old}}(a_{i,t}\!\mid s_{i,t})\Big).
 $$
 
-对于例子里 token “\(\,\text{zero}\,\)”所在步（某个 \(i,t\)）：
+策略目标（在所有生成 token 上取平均）：
 $$
-\rho_{i,t} \;=\; \frac{\pi_\theta(\text{zero}\mid s_{i,t})}{\pi_{\text{old}}(\text{zero}\mid s_{i,t})}.
+L_{\mathrm{policy}}(\theta)=
+\frac{1}{M}\sum_{i,t}\min\!\Big(\rho_{i,t}\,\hat A_{i,t},\ \mathrm{clip}(\rho_{i,t},1-\epsilon,1+\epsilon)\,\hat A_{i,t}\Big).
 $$
 
 ----------------------------------------
@@ -878,49 +848,45 @@ $$
 ----------------------------------------
 Value 损失：
 $$
-L_{\text{value}}(\phi)
-\;=\; \frac{1}{M}\sum_{i,t}\text{mask}_{i,t}\;\frac{1}{2}\,\Big(V_\phi(s_{i,t}) - \hat G_{i,t}\Big)^2.
+L_{\mathrm{value}}(\phi)=\frac{1}{M}\sum_{i,t}\frac{1}{2}\Big(V_\phi(s_{i,t})-\hat G_{i,t}\Big)^2.
 $$
 
-熵正则（使用你给定的格式）：
+熵正则（与您给的格式一致）：
 $$
-H\!\big(\pi_\theta(\cdot \mid s_{i,t})\big)
-\;=\;
--\sum_{a}\pi_\theta(a\mid s_{i,t})\,\log \pi_\theta(a\mid s_{i,t}).
+H\big(\pi_\theta(\cdot\mid s_{i,t})\big) = -\sum_a \pi_\theta(a\mid s_{i,t}) \,\log \pi_\theta(a\mid s_{i,t}).
 $$
-故
+加入总损失的熵项：
 $$
-L_{\text{ent}}(\theta)
-\;=\;
--\frac{1}{M}\sum_{i,t}\text{mask}_{i,t}\;H\!\big(\pi_\theta(\cdot \mid s_{i,t})\big).
+L_{\mathrm{ent}}(\theta) = -\,\frac{1}{M}\sum_{i,t} H\big(\pi_\theta(\cdot\mid s_{i,t})\big).
 $$
 
-（可选）把 KL 放进损失（与第 2) 二选一）：
+（可选）若不用“KL in reward”，采用“KL in loss”：
 $$
-L_{\mathrm{KL}}(\theta)
-\;=\; \frac{1}{M}\sum_{i,t}\text{mask}_{i,t}\;
-\mathrm{KL}\!\big(\pi_\theta(\cdot\mid s_{i,t})\,\big\|\,\pi_{\text{ref}}(\cdot\mid s_{i,t})\big)
-\;=\; \frac{1}{M}\sum_{i,t}\text{mask}_{i,t}\;\sum_a \pi_\theta(a\mid s_{i,t})\,
-\log \frac{\pi_\theta(a\mid s_{i,t})}{\pi_{\text{ref}}(a\mid s_{i,t})}.
+L_{\mathrm{KL}}(\theta)=\frac{1}{M}\sum_{i,t}\mathrm{KL}\big(\pi_\theta(\cdot\mid s_{i,t})\ \|\ \pi_{\mathrm{ref}}(\cdot\mid s_{i,t})\big).
 $$
 
-总损失（最小化；若第 2) 已把 KL 放入奖励，则可令 \(\beta=0\) 省略最后一项）：
+总损失（最小化；若 KL 已进奖励，则省略最后一项）：
 $$
-\min_{\theta,\phi}\;\; -\,L_{\text{policy}}(\theta)\;+\;c_v\,L_{\text{value}}(\phi)\;-\;c_H\,L_{\text{ent}}(\theta)\;+\;\beta\,L_{\mathrm{KL}}(\theta).
+\min_{\theta,\phi}\quad
+-\;L_{\mathrm{policy}}(\theta)\;+\;c_v\,L_{\mathrm{value}}(\phi)\;-\;c_H\,L_{\mathrm{ent}}(\theta)\;+\;\beta\,L_{\mathrm{KL}}(\theta).
 $$
 
 ----------------------------------------
-6) 训练循环（本批多轮、小批 SGD）
+6) 训练细节（与图一致）
 ----------------------------------------
-- 将所有 \(\text{mask}_{i,t}=1\) 的位置展平打乱；
-- 进行 \(K\) 个 epoch 的小批 SGD（AdamW、梯度裁剪等）；
-- 仅在生成 token 上计算与回传梯度。
+- 将本批生成 token 展平、打乱，做 $$K$$ 个 epoch 的小批 SGD（AdamW；梯度裁剪）。
+- 只在生成段上计算损失（prompt token mask）。
+- 可自适应调 $$\beta$$ 以控制参考 KL 目标区间。
 
 ----------------------------------------
-7) 轮末处理
+7) 轮末
 ----------------------------------------
 - 丢弃本批数据；
-- 刷新行为策略：\(\pi_{\text{old}} \leftarrow \pi_\theta\)；
-- 开始下一轮，从步骤 1) 重新 rollout。
+- 刷新行为策略：$$\pi_{\mathrm{old}}\leftarrow \pi_\theta$$；
+- 进入下一轮：用新的 $$\pi_{\mathrm{old}}$$ 重新 rollout。
 
-（完）
+【提示】若要把某一步（如 token = `␠zero`）单独展开，直接把 $$a_{i,t}$$ 置为该 token，在上面的式子逐步代入即可。
+
+
+
+
