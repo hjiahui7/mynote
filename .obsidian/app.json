@@ -1,4 +1,6 @@
 {
   "showLineNumber": true,
-  "tabSize": 5
+  "tabSize": 5,
+  "vimMode": false,
+  "livePreview": true
 }

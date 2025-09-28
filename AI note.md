@@ -36,19 +36,13 @@ number headings: auto, first-level 1, max 6, 1.1
 
 
 
-2.  基础 第二版本
-    
+# 3 RL 基础 第二版本
 
 https://www.bilibili.com/video/BV1rooaYVEk8/?spm_id_from=333.1387.homepage.video_card.click&vd_source=7edf748383cf2774ace9f08c7aed1476
-
-1.  Top down
-    
-
+## 3.1 Top down
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=OTg4YmU4M2ZiMDIyZjZlNGRkOTUxMDlkOWRkOWIwOWRfNGNqa2h4dlhEQWZaeTZ4OHEwSnpYRnEwYnNsYXlUbzhfVG9rZW46THZNc2JmeFZ0b2tzeUV4SDdBWmxzQ3NPZ1FkXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
 2.  Markov decision process
-    
-
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=MWI2ZTdlMDBlYTBjMDE2ODAzM2IwZWQ0NTVlMGQ3ZjFfVXUwOHhMSXE3NU5laDZGT0lPVUs0VTl5YjNBMUpUc3VfVG9rZW46RW55SGJFRVdOb2ZFdHN4R3ROQmxDR3YzZ1ZmXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
 3.  State Value & Action Value
