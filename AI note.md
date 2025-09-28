@@ -768,9 +768,9 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
 
 
 PPO 一轮训练（逐 token，无期望写法；全部数学用 $$...$$ 包裹）
-
+rompt $q_i$
 【任务/示例】
-Prompt $$q_i$$ = "Eric has a banana"；用冻结的 $$\pi_{\mathrm{old}}$$ 生成回复
+Prompt $q_i$ = "Eric has a banana"；用冻结的 $$\pi_{\mathrm{old}}$$ 生成回复
 $$o_{i,1:T_i}=$$ "␠No", ",", "␠Yuxuan", "␠steal", "␠it", ",", "␠so", "␠Eric", "␠has", "␠zero", "."。
 
 ----------------------------------------
