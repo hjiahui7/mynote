@@ -66,7 +66,7 @@ https://www.bilibili.com/video/BV1rooaYVEk8/?spm_id_from=333.1387.homepage.video
         
     3. A(s,a)就是“指定动作分数 − 平均水平”。
         
-    4. 其中的每一步： $$Q(s_t,a_t) = r_t + \gamma V(s_{t+1})$$
+    4. 其中的每一步： $Q(s_t,a_t) = r_t + \gamma V(s_{t+1})$
         
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=MWJiMzcyN2VjY2MxNzFiMmJjNjhhN2RhM2M1MTBjZjRfaG1oYWhwRFVzR0pneGxoc0prNFQ5VWVnRlhjV1VoZXBfVG9rZW46U1o2MWJ5bTdnbzdrM3R4czVWTWxGVmRkZ3lkXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
@@ -87,52 +87,52 @@ https://www.bilibili.com/video/BV1rooaYVEk8/?spm_id_from=333.1387.homepage.video
 1. 优化目标
     
 
-在一个 episodic MDP 里，策略 πθ 的**轨迹**为 $$\tau=(s_0,a_0,r_1,\ldots,s_{T-1},a_{T-1},r_T)$$ 目标是最大化**期望总回报**（也可含折扣）：
+在一个 episodic MDP 里，策略 πθ 的**轨迹**为 $\tau=(s_0,a_0,r_1,\ldots,s_{T-1},a_{T-1},r_T)$ 目标是最大化**期望总回报**（也可含折扣）：
 
-$$J_{\text{true}}(\theta)=\mathbb{E}_{\tau\sim p_\theta(\tau)}\big[R(\tau)\big], \quad R(\tau)=\sum_{t=0}^{T-1}\gamma^t r_{t+1}$$
+$J_{\text{true}}(\theta)=\mathbb{E}_{\tau\sim p_\theta(\tau)}\big[R(\tau)\big], \quad R(\tau)=\sum_{t=0}^{T-1}\gamma^t r_{t+1}$
 
 这里 pθ(τ) 是在当前策略与环境转移下生成该轨迹的**概率密度**：
 
-$$p_\theta(\tau)=\rho(s_0)\prod_{t=0}^{T-1}\pi_\theta(a_t|s_t)\,P(s_{t+1}|s_t,a_t)$$
+$p_\theta(\tau)=\rho(s_0)\prod_{t=0}^{T-1}\pi_\theta(a_t|s_t)\,P(s_{t+1}|s_t,a_t)$
 
 所以最终我们要让这个最大，所以对其求导即可：
 
-$$J_{\text{true}}(\theta) = \sum_{index=0}^{N}p_\theta(\tau_{index})\big[R(\tau_{index})\big]$$
+$J_{\text{true}}(\theta) = \sum_{index=0}^{N}p_\theta(\tau_{index})\big[R(\tau_{index})\big]$
 
 2. 求导过程：目标的梯度（log-derivative trick）
     
 
   
 
-我们要 $$\nabla_\theta J_{\text{true}}(\theta)$$，用**似然比技巧**：
+我们要 $\nabla_\theta J_{\text{true}}(\theta)$，用**似然比技巧**：
 
-$$\nabla_\theta J_{\text{true}} =\nabla_\theta \int p_\theta(\tau)R(\tau)\,d\tau =\int p_\theta(\tau)\,\nabla_\theta \log p_\theta(\tau)\,R(\tau)\,d\tau =\mathbb{E}_{\tau\sim p_\theta}\!\big[\nabla_\theta \log p_\theta(\tau)\,R(\tau)\big]$$注意是 $$\mathbb{E}_{\tau\sim p_\theta}$$
+$\nabla_\theta J_{\text{true}} =\nabla_\theta \int p_\theta(\tau)R(\tau)\,d\tau =\int p_\theta(\tau)\,\nabla_\theta \log p_\theta(\tau)\,R(\tau)\,d\tau =\mathbb{E}_{\tau\sim p_\theta}\!\big[\nabla_\theta \log p_\theta(\tau)\,R(\tau)\big]$注意是 $\mathbb{E}_{\tau\sim p_\theta}$
 
 而
 
-$$\log p_\theta(\tau)=\log\rho(s_0)+\sum_{t=0}^{T-1}\log\pi_\theta(a_t|s_t)+\sum_{t=0}^{T-1}\log P(s_{t+1}|s_t,a_t)$$
+$\log p_\theta(\tau)=\log\rho(s_0)+\sum_{t=0}^{T-1}\log\pi_\theta(a_t|s_t)+\sum_{t=0}^{T-1}\log P(s_{t+1}|s_t,a_t)$
 
 对 θ 求导时只有策略项留下：
 
-$$\nabla_\theta \log p_\theta(\tau)=\sum_{t=0}^{T-1}\nabla_\theta \log\pi_\theta(a_t|s_t)$$
+$\nabla_\theta \log p_\theta(\tau)=\sum_{t=0}^{T-1}\nabla_\theta \log\pi_\theta(a_t|s_t)$
 
 代回去：
 
-$$\nabla_\theta J_{\text{true}} =\mathbb{E}_{\tau\sim p_\theta}\!\Big[\sum_{t=0}^{T-1}\nabla_\theta \log\pi_\theta(a_t|s_t)\,R(\tau)\Big]$$
+$\nabla_\theta J_{\text{true}} =\mathbb{E}_{\tau\sim p_\theta}\!\Big[\sum_{t=0}^{T-1}\nabla_\theta \log\pi_\theta(a_t|s_t)\,R(\tau)\Big]$
 
 注意后续计算可能会忽略最外层的E，因为我们的数据都是通过P（这里不是状态转移函数，是上面的这个轨迹的**概率密度函数**）这个函数的概率分布来取样的，所以我们就可以忽略他了
 
 这就是 **REINFORCE 梯度**的“轨迹级”形式。为了**降方差**，把整段 R(τ)换成“从 t 开始的 reward-to-go 就是步数越远γ越大”：
 
-$$G_t=\sum_{k=t}^{T-1}\gamma^{k-t} r_{k+1}, \quad \nabla_\theta J_{\text{true}} =\mathbb{E}_{\tau\sim p_\theta}\!\Big[\sum_{t=0}^{T-1}\nabla_\theta \log\pi_\theta(a_t|s_t)\,G_t\Big]$$
+$G_t=\sum_{k=t}^{T-1}\gamma^{k-t} r_{k+1}, \quad \nabla_\theta J_{\text{true}} =\mathbb{E}_{\tau\sim p_\theta}\!\Big[\sum_{t=0}^{T-1}\nabla_\theta \log\pi_\theta(a_t|s_t)\,G_t\Big]$
 
 于是我们可以把
 
-$$\boxed{\ J(\theta)\;\;\text{定义为其无偏 MC 估计对应的目标：}\;\; J(\theta)=\mathbb{E}\!\Big[\sum_t G_t\,\log\pi_\theta(a_t|s_t)\Big]\ }$$
+$\boxed{\ J(\theta)\;\;\text{定义为其无偏 MC 估计对应的目标：}\;\; J(\theta)=\mathbb{E}\!\Big[\sum_t G_t\,\log\pi_\theta(a_t|s_t)\Big]\ }$
 
 为什么我们的目标函数直接变成了这样子呢？
 
-因为我们发现通过**某一个式子**利用**似然比技巧**求导后的式子为 $$\quad \nabla_\theta J_{\text{true}} =\mathbb{E}_{\tau\sim p_\theta}\!\Big[\sum_{t=0}^{T-1}\nabla_\theta \log\pi_\theta(a_t|s_t)\,G_t\Big]$$，那么这个**某一个式子为** $$J(\theta)=\mathbb{E}\!\Big[\sum_t G_t\,\log\pi_\theta(a_t|s_t)\Big]$$，简单来说就是求了半天发现这个J(θ)可以由这个简单形式表达，并且他和最初的他是等价的
+因为我们发现通过**某一个式子**利用**似然比技巧**求导后的式子为 $\quad \nabla_\theta J_{\text{true}} =\mathbb{E}_{\tau\sim p_\theta}\!\Big[\sum_{t=0}^{T-1}\nabla_\theta \log\pi_\theta(a_t|s_t)\,G_t\Big]$，那么这个**某一个式子为** $J(\theta)=\mathbb{E}\!\Big[\sum_t G_t\,\log\pi_\theta(a_t|s_t)\Big]$，简单来说就是求了半天发现这个J(θ)可以由这个简单形式表达，并且他和最初的他是等价的
 
 我们此时此刻求出了导数后，就可以用优化函数更新参数了
 
@@ -142,15 +142,15 @@ $$\boxed{\ J(\theta)\;\;\text{定义为其无偏 MC 估计对应的目标：}\;\
     
     1. **采样** N 条轨迹 {τi}（按当前策略）
         
-    2. **回放**：对每条 τi 倒序算 $$G_t^i$$
+    2. **回放**：对每条 τi 倒序算 $G_t^i$
         
-    3. **（可选）基线**：用 $$G_t^i-b(s_t^i)$$ 降方差
+    3. **（可选）基线**：用 $G_t^i-b(s_t^i)$ 降方差
         
     4. **估计梯度**：
         
-            $$\widehat{\nabla_\theta J} =\frac{1}{N}\sum_{i=1}^N\sum_{t}(G_t^i-b(s_t^i))\,\nabla_\theta\log\pi_\theta(a_t^i|s_t^i)$$
+            $\widehat{\nabla_\theta J} =\frac{1}{N}\sum_{i=1}^N\sum_{t}(G_t^i-b(s_t^i))\,\nabla_\theta\log\pi_\theta(a_t^i|s_t^i)$
         
-    5. **更新参数**： $$\theta\leftarrow\theta+\alpha\,\widehat{\nabla_\theta J}$$
+    1. **更新参数**： $\theta\leftarrow\theta+\alpha\,\widehat{\nabla_\theta J}$
         
 
 全程没有显式出现 pθ(τ)的数值计算。
@@ -171,7 +171,7 @@ REINFORCE 无偏但方差大，学习抖。说白了就是G一般情况下可能
 
 **Actor–Critic（TD）**：**一旦把 Gt 换成 TD 目标（例如用 δt 或 n-step/GAE 近似），你就进入了 actor–critic 范式，能够k 步一更，甚至步步更新。**。关键是把优势用**TD 残差**近似，完全不必等 episode 结束。
 
-相当于把Gt换成 $$r_{t+1} \;+\; \gamma\,V_\phi(s_{t+1})$$
+相当于把Gt换成 $r_{t+1} \;+\; \gamma\,V_\phi(s_{t+1})$
 
 2.  (GAE)Generalized Advantage Estimation
     
@@ -246,9 +246,9 @@ note：
         
     2. 开了10分钟（r(st,at)）=10，Q(st+1,at+1) = 18
         
-    3. 我们希望 $$rt+γQπ(st+1,at+1)−Qπ(st,at) = 0$$ ，所以我们求导，然后得到梯度。然后基于优化函数（把他当作adam，sgd等看待就行） $$Qπ(st,at)←Qπ(st,at)+α[rt+γQπ(st+1,at+1)−Qπ(st,at)]$$, 我们的更新公式为30 + α（10 + 18 - 30），然后得到的值来更新table。
+    3. 我们希望 $rt+γQπ(st+1,at+1)−Qπ(st,at) = 0$ ，所以我们求导，然后得到梯度。然后基于优化函数（把他当作adam，sgd等看待就行） $Qπ(st,at)←Qπ(st,at)+α[rt+γQπ(st+1,at+1)−Qπ(st,at)]$, 我们的更新公式为30 + α（10 + 18 - 30），然后得到的值来更新table。
         
-    4. 如果是网络则用损失函数更新，得到梯度的方式为最大化 $$L(\theta) = \Big( r_t + \gamma Q(s_{t+1},a_{t+1};\theta) - Q(s_t,a_t;\theta) \Big)^2$$
+    4. 如果是网络则用损失函数更新，得到梯度的方式为最大化 $L(\theta) = \Big( r_t + \gamma Q(s_{t+1},a_{t+1};\theta) - Q(s_t,a_t;\theta) \Big)^2$
         
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=ZjJjNmQ2NWRjNzg2OTU4ODQ5YjI0NzE1ZDk4MDQ5M2ZfNmw4TEx4RzJUTDJadGEza0xGMUM0RWRHNGR6SE02cWxfVG9rZW46TTAxY2JUZlhmb05iNU54ZXlHQmx5UUNLZ1ZoXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
@@ -307,7 +307,7 @@ TD的算法有SARSA and Q learning
         
         1. 网络一次性输出该状态下 **所有可能动作** 的 Q 值向量：
             
-        2. $$[Q(s_t,a_1), Q(s_t,a_2), \dots, Q(s_t,a_n)]$$
+        2. $[Q(s_t,a_1), Q(s_t,a_2), \dots, Q(s_t,a_n)]$
             
         
     📌 注意：不用一个一个传入 action，而是一次前向传播就得到所有动作的 Q 值。
@@ -332,13 +332,13 @@ TD的算法有SARSA and Q learning
             
         2. 目标值 (TD target)：
             
-            - $$y_t = r_t + \gamma \max_{a'} Q_{\theta^-}(s_{t+1}, a')$$
+            - $y_t = r_t + \gamma \max_{a'} Q_{\theta^-}(s_{t+1}, a')$
                 
-            - （这里的 $$Q_{\theta^-}$$是 target network）
+            - （这里的 $Q_{\theta^-}$是 target network）
                 
         3. 损失函数：
             
-            - $$L(\theta) = \frac{1}{2}\big(y_t - Q_\theta(s_t,a_t)\big)^2$$or $$L(\theta) = \Big( r_t + \gamma Q(s_{t+1},a_{t+1};\theta) - Q(s_t,a_t;\theta) \Big)^2$$
+            - $L(\theta) = \frac{1}{2}\big(y_t - Q_\theta(s_t,a_t)\big)^2$or $L(\theta) = \Big( r_t + \gamma Q(s_{t+1},a_{t+1};\theta) - Q(s_t,a_t;\theta) \Big)^2$
                 
     8. 更新参数
         
@@ -380,8 +380,7 @@ TD的算法有SARSA and Q learning
         3. 我们首先用behavior采样N个st,at,rt,st+1, target behavior也可以去采样一些点。这里的policy Π是不一样的，所以可以分开采样。相当于behavior用了一个网络（random），或者table来进行采样然后获得数据，target也是一样，只不过他们用的网络或者table不一样。虽然Q learning用的还是之前的Q的table或者网络，但是最终的决策过程Π是greedy 不是random。比如，Q(st,at)和Q(st+1,at+1)的决策方法是不一样的，因为一个用max （greedy）一个random，策略不同，所以会直到后续的采样数据是不一样的，比如数据a，st+1, at+1...sT分布是不一样的，所以我们说两者behavior数据分布不同，那么就是off policy
             
     4. PPO为例（onpolicy）
-        
-            PPO是一个看起来很像off-policy（因为他是复制了老的，然后更新，过程中会出现两个Π）的on-policy算法（**PPO 要“新采样→在这批上训练→丢弃”，不能像 off-policy 那样长期吃旧/异策略数据，这才是它 on-policy 的本质**）。“丢不丢弃数据”只是**现象**而不是定义：**on-policy**要求用与目标策略（当前/刚冻结的策略）**一致或近邻**分布的数据训练（所以旧数据常被丢弃以避免分布漂移）；**off-policy**则能在**行为≠目标**时依然有效学习（靠最优/软最优备份如 `max`，或 IS/截断-IS 等纠偏），因此可以长期复用回放数据。
+		PPO是一个看起来很像off-policy（因为他是复制了老的，然后更新，过程中会出现两个Π）的on-policy算法（**PPO 要“新采样→在这批上训练→丢弃”，不能像 off-policy 那样长期吃旧/异策略数据，这才是它 on-policy 的本质**）。“丢不丢弃数据”只是**现象**而不是定义：**on-policy**要求用与目标策略（当前/刚冻结的策略）**一致或近邻**分布的数据训练（所以旧数据常被丢弃以避免分布漂移）；**off-policy**则能在**行为≠目标**时依然有效学习（靠最优/软最优备份如 `max`，或 IS/截断-IS 等纠偏），因此可以长期复用回放数据。
         
 
   
@@ -392,25 +391,14 @@ TD的算法有SARSA and Q learning
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=OWViYmVhNDIxNTM3NzAxNmQyYThlMGYyYzJiYTlkNzZfWW1pMDI1SzBDWnliT2tVSmpDT09hd0NKYWk4WTZyOWVfVG9rZW46SlhDWmJZSjY5b1dzeFV4c2tIemxjZ2RzZ1RkXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
 1. 我们希望当前s出现动作a的概率增高，然后Q(s,a)的价值最大
-    
 2. 目标函数 J(θ)（对所有轨迹求和）
-    
+	- 设一条轨迹 $τ=(s0,a0,r0,…,sT)$，它的累计回报$R(\tau)=\sum_{t=0}^{T-1}\gamma^t r_t$ 
+	- 轨迹在策略 πθ 下出现的概率
+	- $p_\theta(\tau)=\rho(s_0)\prod_{t=0}^{T-1}\pi_\theta(a_t|s_t)\,P(s_{t+1}|s_t,a_t)$
+	- （初始分布 ρ 和环境转移 P 与 θ 无关）。
+	- 于是 $J(\theta)=\sum_{\tau} p_\theta(\tau)\,R(\tau)$
 
-设一条轨迹 τ=(s0,a0,r0,…,sT)，它的累计回报
-
-$$R(\tau)=\sum_{t=0}^{T-1}\gamma^t r_t$$
-
-轨迹在策略 πθ 下出现的概率
-
-$$p_\theta(\tau)=\rho(s_0)\prod_{t=0}^{T-1}\pi_\theta(a_t|s_t)\,P(s_{t+1}|s_t,a_t)$$
-
-（初始分布 ρ 和环境转移 P 与 θ 无关）。
-
-于是
-
-$$J(\theta)=\sum_{\tau} p_\theta(\tau)\,R(\tau) $$
-
-1.  Reinforce and ACtor Critic
+3.  Reinforce and ACtor Critic
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=ODQ5Njc5ZGM5ODFiOGY4YjAzMWYwNDM1MjM0MWY1NWVfUGxjUTl3Mlk1RUV4RVpPbzFLNDZhVUJYOHkzZDg2aHpfVG9rZW46UDJWbmJUOFFCb1RvTWd4OVNjNmxuQUJYZ3hnXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
@@ -457,10 +445,10 @@ $$J(\theta)=\sum_{\tau} p_\theta(\tau)\,R(\tau) $$
 
 1. # 为什么Q learning不用这个？（说实话没搞懂这个）https://zhuanlan.zhihu.com/p/346433931
     
-    1. 直觉上想着，我通过不同的policy采样，那么我的Q值也是不一样的呀，这样不会影响其在更新时的分布吗？ $$Q_t - (r + Q_{t+1})$$比如Vt+1很大，Vt很小，我们让他们分布一样不好吗？答案是同分布”没意义，甚至有害。**Bellman 不动点会被改写**：如果你对 Qt 或 yt 施加与样本相关的非线性“归一化”，就相当于改了目标函数，可能不再收敛到 Q
+    1. 直觉上想着，我通过不同的policy采样，那么我的Q值也是不一样的呀，这样不会影响其在更新时的分布吗？ $Q_t - (r + Q_{t+1})$比如Vt+1很大，Vt很小，我们让他们分布一样不好吗？答案是同分布”没意义，甚至有害。**Bellman 不动点会被改写**：如果你对 Qt 或 yt 施加与样本相关的非线性“归一化”，就相当于改了目标函数，可能不再收敛到 Q
         
     
-      $$\mathbb{E}_{(s,a)\sim d_\mu}\big[\big(y(s,a)-Q_\theta(s,a)\big)^2\big], \quad y=r+\gamma \max_{a'}Q_{\bar\theta}(s',a')$$
+      $\mathbb{E}_{(s,a)\sim d_\mu}\big[\big(y(s,a)-Q_\theta(s,a)\big)^2\big], \quad y=r+\gamma \max_{a'}Q_{\bar\theta}(s',a')$
     
 
 2.  Trust region policy optimization(细节还没有研究)
@@ -472,7 +460,7 @@ Delve in 研究
 
 假设我们采样了 N 条轨迹，每条轨迹长度 Ti。那么期望就可以近似为：
 
-$$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_i-1} \Bigg[ \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_\theta(a_t^{(i)} \mid s_t^{(i)})} \;\gamma^t \; A_{\pi_\theta}(s_t^{(i)},a_t^{(i)}) \Bigg]$$
+$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_i-1} \Bigg[ \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_\theta(a_t^{(i)} \mid s_t^{(i)})} \;\gamma^t \; A_{\pi_\theta}(s_t^{(i)},a_t^{(i)}) \Bigg]$
 
 注意：
 
@@ -502,11 +490,11 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
     1. PPO-penalty
         
     
-      $$\begin{equation} L^{\text{PPO-penalty}}(\theta') \approx \frac{1}{N}\sum_{i=1}^N \sum_{t=0}^{T_i-1} \left[ \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_{\theta}(a_t^{(i)} \mid s_t^{(i)})} \, \hat{A}_t^{(i)} - \beta \, D_{\text{KL}}\!\Big(\pi_{\theta}(\cdot \mid s_t^{(i)}) \,\|\, \pi_{\theta'}(\cdot \mid s_t^{(i)})\Big) \right] \end{equation}$$
+      $\begin{equation} L^{\text{PPO-penalty}}(\theta') \approx \frac{1}{N}\sum_{i=1}^N \sum_{t=0}^{T_i-1} \left[ \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_{\theta}(a_t^{(i)} \mid s_t^{(i)})} \, \hat{A}_t^{(i)} - \beta \, D_{\text{KL}}\!\Big(\pi_{\theta}(\cdot \mid s_t^{(i)}) \,\|\, \pi_{\theta'}(\cdot \mid s_t^{(i)})\Big) \right] \end{equation}$
     
     2. PPO-clip
         
-            $$\begin{equation} L^{\text{PPO-clip}}(\theta') \approx \frac{1}{N}\sum_{i=1}^N \sum_{t=0}^{T_i-1} \min\!\Bigg( \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_{\theta}(a_t^{(i)} \mid s_t^{(i)})} \, \hat{A}_t^{(i)}, \; \text{clip}\!\left( \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_{\theta}(a_t^{(i)} \mid s_t^{(i)})}, \, 1-\epsilon, \, 1+\epsilon \right)\hat{A}_t^{(i)} \Bigg) \end{equation}$$
+            $\begin{equation} L^{\text{PPO-clip}}(\theta') \approx \frac{1}{N}\sum_{i=1}^N \sum_{t=0}^{T_i-1} \min\!\Bigg( \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_{\theta}(a_t^{(i)} \mid s_t^{(i)})} \, \hat{A}_t^{(i)}, \; \text{clip}\!\left( \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_{\theta}(a_t^{(i)} \mid s_t^{(i)})}, \, 1-\epsilon, \, 1+\epsilon \right)\hat{A}_t^{(i)} \Bigg) \end{equation}$
         
     3. 我们目标就是让这俩L最大
         
@@ -537,7 +525,7 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
     
     3. 收集数据（使用旧策略）在当前策略参数 θ下，跑环境，收集一批轨迹： (st,at,rt,st+1)。
         
-    4. 用这些数据用Vθ估计 **优势函数** $$\hat{A}_t$$（比如用 GAE）。
+    4. 用这些数据用Vθ估计 **优势函数** $\hat{A}_t$（比如用 GAE）。
         
         ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=OWZlNzQ5ODk1NzIzNDk5MjYwZWJjNjU5N2NjOWJmN2Nfc2FOSk9SVzNNbVhSUGdMWXhDNmlvNkg5T2pxd3NkQmdfVG9rZW46TWFJdWJDN0E5b2NINml4dGR4TmxKVlNrZzBlXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
         
@@ -551,7 +539,7 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
     
        对每个样本计算：
     
-      $$r_t(\theta') \;=\; \frac{\pi_{\theta'}(a_t|s_t)}{\pi_{\theta}(a_t|s_t)}$$
+      $r_t(\theta') \;=\; \frac{\pi_{\theta'}(a_t|s_t)}{\pi_{\theta}(a_t|s_t)}$
     
     4. 分子：**新策略** πθ′ 对样本的概率（随着训练更新）。
         
@@ -567,28 +555,28 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
     
     1. PPO-penalty or PPO-clip （最大化价值）
         
-            $$\begin{equation} L^{\text{PPO-penalty}}(\theta') \approx \frac{1}{N}\sum_{i=1}^N \sum_{t=0}^{T_i-1} \left[ \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_{\theta}(a_t^{(i)} \mid s_t^{(i)})} \, \hat{A}_t^{(i)} - \beta \, D_{\text{KL}}\!\Big(\pi_{\theta}(\cdot \mid s_t^{(i)}) \,\|\, \pi_{\theta'}(\cdot \mid s_t^{(i)})\Big) \right] \end{equation}$$$$\begin{equation} L^{\text{PPO-clip}}(\theta') \approx \frac{1}{N}\sum_{i=1}^N \sum_{t=0}^{T_i-1} \min\!\Bigg( \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_{\theta}(a_t^{(i)} \mid s_t^{(i)})} \, \hat{A}_t^{(i)}, \; \text{clip}\!\left( \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_{\theta}(a_t^{(i)} \mid s_t^{(i)})}, \, 1-\epsilon, \, 1+\epsilon \right)\hat{A}_t^{(i)} \Bigg) \end{equation}$$
+            $\begin{equation} L^{\text{PPO-penalty}}(\theta') \approx \frac{1}{N}\sum_{i=1}^N \sum_{t=0}^{T_i-1} \left[ \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_{\theta}(a_t^{(i)} \mid s_t^{(i)})} \, \hat{A}_t^{(i)} - \beta \, D_{\text{KL}}\!\Big(\pi_{\theta}(\cdot \mid s_t^{(i)}) \,\|\, \pi_{\theta'}(\cdot \mid s_t^{(i)})\Big) \right] \end{equation}$$\begin{equation} L^{\text{PPO-clip}}(\theta') \approx \frac{1}{N}\sum_{i=1}^N \sum_{t=0}^{T_i-1} \min\!\Bigg( \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_{\theta}(a_t^{(i)} \mid s_t^{(i)})} \, \hat{A}_t^{(i)}, \; \text{clip}\!\left( \frac{\pi_{\theta'}(a_t^{(i)} \mid s_t^{(i)})}{\pi_{\theta}(a_t^{(i)} \mid s_t^{(i)})}, \, 1-\epsilon, \, 1+\epsilon \right)\hat{A}_t^{(i)} \Bigg) \end{equation}$
         
             我们目标就是让这俩L最大
         
     2. Value 目标（最小化误差）
         
-            $$y_t =\hat R_t = \hat A_t + V_{\phi_{\text{old}}}(s_t) \;\;\approx\; Q(s_t,a_t)$$
+            $y_t =\hat R_t = \hat A_t + V_{\phi_{\text{old}}}(s_t) \;\;\approx\; Q(s_t,a_t)$
         
             然后让 Vθ(st) 去回归这个目标：
         
-            $$L_{(\theta)} = \frac{1}{N}\sum_t \big(V_\theta(s_t) - y_t\big)^2$$
+            $L_{(\theta)} = \frac{1}{N}\sum_t \big(V_\theta(s_t) - y_t\big)^2$
         
             note: 和Value based：MC & TD中更新Q的方式是一样的
         
     3. −c2 Entropy(πθ)熵正则项
         
-            $$H(\pi_\theta(\cdot|s_t)) = -\sum_a \pi_\theta(a|s_t) \,\log \pi_\theta(a|s_t)$$
+            $H(\pi_\theta(\cdot|s_t)) = -\sum_a \pi_\theta(a|s_t) \,\log \pi_\theta(a|s_t)$
         
         2. 策略的熵定义为：
             
         
-            $$H(\pi_\theta(\cdot|s)) = -\sum_a \pi_\theta(a|s) \log \pi_\theta(a|s)$$
+            $H(\pi_\theta(\cdot|s)) = -\sum_a \pi_\theta(a|s) \log \pi_\theta(a|s)$
         
         3. 熵越大，策略越随机；熵越小，策略越确定（贪心）。
             
@@ -603,47 +591,47 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
             1. 期望
                 
             
-                  $$\begin{aligned} L(\theta,\phi) &= \mathbb{E}_t \Bigg[ \underbrace{-\min\Bigg( r_t(\theta)\,\hat{A}_t, \; \text{clip}\!\big(r_t(\theta),\, 1-\epsilon,\, 1+\epsilon\big)\,\hat{A}_t \Bigg)}_{\text{Policy Loss (Actor)}} \\ &\quad\quad + \; \underbrace{c_1 \big( V_\phi(s_t) - \hat R_t \big)^2}_{\text{Value Loss (Critic)}} \; - \; \underbrace{c_2 \, H\!\big(\pi_\theta(\cdot|s_t)\big)}_{\text{Entropy Bonus}} \Bigg] \end{aligned}$$
+                  $\begin{aligned} L(\theta,\phi) &= \mathbb{E}_t \Bigg[ \underbrace{-\min\Bigg( r_t(\theta)\,\hat{A}_t, \; \text{clip}\!\big(r_t(\theta),\, 1-\epsilon,\, 1+\epsilon\big)\,\hat{A}_t \Bigg)}_{\text{Policy Loss (Actor)}} \\ &\quad\quad + \; \underbrace{c_1 \big( V_\phi(s_t) - \hat R_t \big)^2}_{\text{Value Loss (Critic)}} \; - \; \underbrace{c_2 \, H\!\big(\pi_\theta(\cdot|s_t)\big)}_{\text{Entropy Bonus}} \Bigg] \end{aligned}$
             
             2. Batch 形式
                 
                         设一个训练批次包含若干条序列，用索引集合 M={(i,t)}表示本次用于优化的所有样本（第 i 条轨迹在时刻 t 的一条样本）。PPO 的**要最小化**的总损失：
                 
-                        $$\boxed{ L(\theta,\phi) = \frac{1}{|\mathcal{M}|}\sum_{(i,t)\in\mathcal{M}} \Big[ -\min\!\big(\, r_{i,t}(\theta)\,\hat A_{i,t},\ \text{clip}(r_{i,t}(\theta),\,1-\epsilon,\,1+\epsilon)\,\hat A_{i,t}\big) \;+\; c_1\,(V_\phi(s_{i,t})-\hat R_{i,t})^2 \;-\; c_2\,H(\pi_\theta(\cdot|s_{i,t})) \Big] }$$
+                        $\boxed{ L(\theta,\phi) = \frac{1}{|\mathcal{M}|}\sum_{(i,t)\in\mathcal{M}} \Big[ -\min\!\big(\, r_{i,t}(\theta)\,\hat A_{i,t},\ \text{clip}(r_{i,t}(\theta),\,1-\epsilon,\,1+\epsilon)\,\hat A_{i,t}\big) \;+\; c_1\,(V_\phi(s_{i,t})-\hat R_{i,t})^2 \;-\; c_2\,H(\pi_\theta(\cdot|s_{i,t})) \Big] }$
                 
         2. 各部分定义
             
             1. 策略比率
                 
             
-                  $$r_{i,t}(\theta) = \frac{\pi_\theta(a_{i,t}|s_{i,t})}{\pi_{\text{old}}(a_{i,t}|s_{i,t})}$$
+                  $r_{i,t}(\theta) = \frac{\pi_\theta(a_{i,t}|s_{i,t})}{\pi_{\text{old}}(a_{i,t}|s_{i,t})}$
             
-            2. 优势 $$\hat A_{i,t}$$（GAE 的展开/递推，均为有限和）
+            1. 优势 $\hat A_{i,t}$（GAE 的展开/递推，均为有限和）
                 
                         先定义一步 TD 残差（带终止遮罩）：
                 
-                        $$ \delta_{i,t} \;=\; r_{i,t} + \gamma(1-\text{done}_{i,t+1})\,V_\phi(s_{i,t+1}) \;-\; V_\phi(s_{i,t})$$
+                        $ \delta_{i,t} \;=\; r_{i,t} + \gamma(1-\text{done}_{i,t+1})\,V_\phi(s_{i,t+1}) \;-\; V_\phi(s_{i,t})$
                 
             
                   向后递推计算 GAE：
             
-                    $$\hat A_{i,T_i-1} \;=\; \delta_{i,T_i-1}, \quad \hat A_{i,t} \;=\; \delta_{i,t} + \gamma\lambda(1-\text{done}_{i,t+1})\,\hat A_{i,t+1}$$
+                    $\hat A_{i,T_i-1} \;=\; \delta_{i,T_i-1}, \quad \hat A_{i,t} \;=\; \delta_{i,t} + \gamma\lambda(1-\text{done}_{i,t+1})\,\hat A_{i,t+1}$
             
                   或写成有限项显式求和：
             
-                  $$\hat A_{i,t} \;=\; \sum_{l=0}^{T_i-t-1} (\gamma\lambda)^l \left[\, r_{i,t+l} + \gamma(1-\text{done}_{i,t+l+1})\,V_\phi(s_{i,t+l+1}) - V_\phi(s_{i,t+l}) \right]$$
+                  $\hat A_{i,t} \;=\; \sum_{l=0}^{T_i-t-1} (\gamma\lambda)^l \left[\, r_{i,t+l} + \gamma(1-\text{done}_{i,t+l+1})\,V_\phi(s_{i,t+l+1}) - V_\phi(s_{i,t+l}) \right]$
             
-            3. 回报估计
+            2. 回报估计
                 
             
-                  $$\hat{R}_{i,t} = \hat{A}_{i,t} + V_\phi(s_{i,t})$$
+                  $\hat{R}_{i,t} = \hat{A}_{i,t} + V_\phi(s_{i,t})$
             
-            4. 熵正则项
+            3. 熵正则项
                 
             
-                  $$H(\pi_\theta(\cdot|s_{i,t})) = -\sum_a \pi_\theta(a|s_{i,t}) \,\log \pi_\theta(a|s_{i,t})$$
+                  $H(\pi_\theta(\cdot|s_{i,t})) = -\sum_a \pi_\theta(a|s_{i,t}) \,\log \pi_\theta(a|s_{i,t})$
             
-            5. 超参数
+            4. 超参数
                 
                 1. ϵ：clip 范围（如 0.1 或 0.2）。
                     
@@ -657,27 +645,27 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
                     
 4. 优化与更新
     
-    1. **收集数据**（用冻结的 $$\pi_{\text{old}}$$）得到 $$(s_{i,t},a_{i,t},r_{i,t},\text{done}_{i,t})$$
+    1. **收集数据**（用冻结的 $\pi_{\text{old}}$）得到 $(s_{i,t},a_{i,t},r_{i,t},\text{done}_{i,t})$
         
-    2. 用当前的 Vϕ 计算 $$\delta_{i,t}$$,再**向后递推**得 $$\hat A_{i,t}$$，并令 $$\hat R_{i,t}=\hat A_{i,t}+V_\phi(s_{i,t})$$
+    2. 用当前的 Vϕ 计算 $\delta_{i,t}$,再**向后递推**得 $\hat A_{i,t}$，并令 $\hat R_{i,t}=\hat A_{i,t}+V_\phi(s_{i,t})$
         
     3. 初始化新参数：θ′←θ（旧策略参数的拷贝）。
         
     4. 在这同一批数据上，做 **K 个 epoch**、若干 mini-batch：
         
-        1. 计算 $$r_{i,t}(\theta)$$、clip 后的策略最大Advantage；
+        1. 计算 $r_{i,t}(\theta)$、clip 后的策略最大Advantage；
             
-            - **旧策略分母** $$\pi_\theta(a_t|s_t)$$是固定的（旧策略，来自采样）。
+            - **旧策略分母** $\pi_\theta(a_t|s_t)$是固定的（旧策略，来自采样）。
                 
-            - **新策略分子** $$\pi_{\theta'}(a_t|s_t)$$每次都会随着 θ′ 更新而改变。
+            - **新策略分子** $\pi_{\theta'}(a_t|s_t)$每次都会随着 θ′ 更新而改变。
                 
-        2. 计算价值 MSE 项 $$(V_\phi-\hat R)^2$$
+        2. 计算价值 MSE 项 $(V_\phi-\hat R)^2$
             
         3. 计算熵项；
             
-        4. 按上面的 **经验损失** $$L(\theta,\phi)$$ 反传更新。
+        4. 按上面的 **经验损失** $L(\theta,\phi)$ 反传更新。
             
-    5. 结束后把 $$\pi_{\text{old}}\leftarrow \pi_{\theta}$$，进入下一批。
+    5. 结束后把 $\pi_{\text{old}}\leftarrow \pi_{\theta}$，进入下一批。
         
 
 ## 3.4 PPO LLM
@@ -757,7 +745,7 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
 └──────────────────────────────┘
 
 ### 3.4.1 PPO
-    
+#### 3.4.1.1 图解
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=MmUyZDE5MWE3ZTNmOGFkY2M2OGRiYTkyMjBhZDY4ZDVfS3dBYlZ5bEltZE84cW0wb2ljQlYyTFpjbEtzY3hvNE9fVG9rZW46STFWdGJ5ZXZlb1kyb0l4Z2lBYmw1VzkxZzZiXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
@@ -768,3 +756,122 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
 
 
 
+
+#### 3.4.1.2 PPO 一轮训练
+【任务/示例】
+Prompt $q_i=$ "Eric has a banana"；用冻结的 $\pi_{\mathrm{old}}$ 生成回复
+$o_{i,1:T_i}=$ "␠No", ",", "␠Yuxuan", "␠steal", "␠it", ",", "␠so", "␠Eric", "␠has", "␠zero", "。"
+
+----------------------------------------
+0) 记号（与图片一致）
+----------------------------------------
+- 状态与动作：
+  $$s_{i,t}=(q_i,\, o_{i,<t}),\quad a_{i,t}=o_{i,t}.$$
+- 策略与价值：冻结行为策略 $\pi_{\mathrm{old}}$，当前可训练策略 $\pi_\theta$，参考模型 $\pi_{\mathrm{ref}}$，价值网络 $V_\phi$。
+- 仅对“生成段”计算损失（prompt token 被 mask）。
+
+----------------------------------------
+1) Rollout：用 $\pi_{\mathrm{old}}$ 逐 token 生成并缓存对数概率
+----------------------------------------
+对每个样本 i、每个生成步 $t=1..T_i$，缓存：
+$$\log \pi_{\mathrm{old}}(a_{i,t}\mid s_{i,t}),\qquad \log \pi_{\mathrm{ref}}(a_{i,t}\mid s_{i,t}).$$
+
+示例中的 “␠zero” 步：
+$$s_{i,t}=(q_i,\text{`␠No`},`,`,\ldots,\text{`␠has`}),\quad a_{i,t}=\text{`␠zero`}.$$
+
+----------------------------------------
+2) 奖励整形（KL in reward）+ 末端奖励模型
+----------------------------------------
+定义单样本 KL 近似：
+$$\mathrm{KL}_{i,t}\ \approx\ \log \pi_{\mathrm{old}}(a_{i,t}\!\mid s_{i,t})\;-\;\log \pi_{\mathrm{ref}}(a_{i,t}\!\mid s_{i,t}).$$
+
+逐步即时奖励：
+$$
+r_{i,t}=
+\begin{cases}
+-\beta\,\mathrm{KL}_{i,t}, & t<T_i,\\[4pt]
+R_\psi\!\big(q_i,\,o_{i,1:T_i}\big)\;-\;\beta\,\mathrm{KL}_{i,T_i}, & t=T_i.
+\end{cases}
+$$
+
+（若改用“KL in loss”，则此处 $r_{i,t}$ 不含 KL，改在第 5) 步加入 $\beta\,\mathrm{KL}(\pi_\theta\|\pi_{\mathrm{ref}})$。两种写法择一即可。）
+
+----------------------------------------
+3) Critic 目标：TD、GAE 与回报（常取 $\gamma=1$）
+----------------------------------------
+设 $V_\phi(s_{i,T_i+1})=0$。
+
+TD 残差：
+$$\delta_{i,t}=r_{i,t}+\gamma\,V_\phi(s_{i,t+1})-V_\phi(s_{i,t}).$$
+
+GAE 递推（从后往前）：
+$$
+\hat A_{i,T_i}=\delta_{i,T_i},\qquad
+\hat A_{i,t}=\delta_{i,t}+\gamma\lambda\,\hat A_{i,t+1}\quad (t=T_i-1,\ldots,1).
+$$
+
+Value 的监督目标（回报）：
+$$\hat G_{i,t}=\hat A_{i,t}+V_\phi(s_{i,t}).$$
+
+对本批所有“生成 token”的优势做标准化（展平总数为 $M=\sum_i T_i$）：
+$$\hat A \leftarrow \frac{\hat A-\mathrm{mean}(\hat A)}{\mathrm{std}(\hat A)+\varepsilon}.$$
+
+----------------------------------------
+4) Actor（PPO-clip）
+----------------------------------------
+策略概率比：
+$$
+\rho_{i,t}
+=\frac{\pi_\theta(a_{i,t}\!\mid s_{i,t})}{\pi_{\mathrm{old}}(a_{i,t}\!\mid s_{i,t})}
+=\exp\!\Big(\log\pi_\theta(a_{i,t}\!\mid s_{i,t})-\log\pi_{\mathrm{old}}(a_{i,t}\!\mid s_{i,t})\Big).
+$$
+
+策略目标（在所有生成 token 上取平均）：
+$$
+L_{\mathrm{policy}}(\theta)=
+\frac{1}{M}\sum_{i,t}\min\!\Big(\rho_{i,t}\,\hat A_{i,t},\ \mathrm{clip}(\rho_{i,t},1-\epsilon,1+\epsilon)\,\hat A_{i,t}\Big).
+$$
+
+----------------------------------------
+5) 其他项：Value / Entropy /（可选）KL-in-loss
+----------------------------------------
+Value 损失：
+$$
+L_{\mathrm{value}}(\phi)=\frac{1}{M}\sum_{i,t}\frac{1}{2}\Big(V_\phi(s_{i,t})-\hat G_{i,t}\Big)^2.
+$$
+
+熵正则（你的正确格式）：
+$$
+H\!\big(\pi_\theta(\cdot\mid s_{i,t})\big) \;=\; -\sum_a \pi_\theta(a\mid s_{i,t}) \,\log \pi_\theta(a\mid s_{i,t}).
+$$
+加入总损失的熵项：
+$$
+L_{\mathrm{ent}}(\theta) \;=\; -\,\frac{1}{M}\sum_{i,t} H\!\big(\pi_\theta(\cdot\mid s_{i,t})\big).
+$$
+
+（可选）若不用“KL in reward”，采用“KL in loss”：
+$$
+L_{\mathrm{KL}}(\theta)=\frac{1}{M}\sum_{i,t}\mathrm{KL}\!\big(\pi_\theta(\cdot\mid s_{i,t})\ \|\ \pi_{\mathrm{ref}}(\cdot\mid s_{i,t})\big).
+$$
+
+总损失（最小化；若 KL 已进奖励，则省略最后一项）：
+$$
+\min_{\theta,\phi}\quad
+-\;L_{\mathrm{policy}}(\theta)\;+\;c_v\,L_{\mathrm{value}}(\phi)\;-\;c_H\,L_{\mathrm{ent}}(\theta)\;+\;\beta\,L_{\mathrm{KL}}(\theta).
+$$
+
+----------------------------------------
+6) 训练细节（与图一致）
+----------------------------------------
+- 将本批生成 token 展平、打乱，做 $K$ 个 epoch 的小批 SGD（AdamW；梯度裁剪）。
+- 只在生成段上计算损失（prompt token mask）。
+- 可自适应调 $\beta$ 以控制参考 KL 目标区间。
+
+----------------------------------------
+7) 轮末
+----------------------------------------
+- 丢弃本批数据；
+- 刷新行为策略：$\pi_{\mathrm{old}}\leftarrow \pi_\theta$；
+- 进入下一轮：用新的 $\pi_{\mathrm{old}}$ 重新 rollout。
+
+【补充】若要在文本中穿插示例 token（如 `␠zero`）的单步展开，直接把 $a_{i,t}$ 置为该 token，并在上式逐步代入即可。
