@@ -54,8 +54,8 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#excalidraw",
-                "matchingCase": false,
+                "query": "######",
+                "matchingCase": true,
                 "explainSearch": false,
                 "collapseAll": false,
                 "extraContext": false,
@@ -75,7 +75,8 @@
               "title": "书签"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       },
       {
         "id": "8af94b550d153d27",
@@ -102,7 +103,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 210.49999618530273
   },
   "right": {
     "id": "5bbe74358d61d561",
@@ -189,7 +190,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 448.5
+    "width": 448.5,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -205,7 +207,7 @@
       "obsidian-excalidraw-plugin:新建绘图文件": false
     }
   },
-  "active": "e331075f82cc44c5",
+  "active": "2d3293f82f7393b1",
   "lastOpenFiles": [
     "README.md",
     "AI note.md",

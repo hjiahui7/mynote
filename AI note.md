@@ -6,7 +6,7 @@ number headings: auto, first-level 1, max 6, 1.1
 # 1 RL 知识梳理
 
 
-## 1.1 Top Down
+ 1.1 Top Down
 ![[Pasted image 20250927014929.png]]
 
 # 2 统一框架（总览）
@@ -19,39 +19,39 @@ number headings: auto, first-level 1, max 6, 1.1
 - 核心循环：广义策略迭代（GPI）= 评估（学 V/Q/Adv）→ 改进（greedy/softmax 或 策略梯度）→ 重复。
 
 
-## 2.1 Value-based（**c2a：Critic → Actor**）
+ 2.1 Value-based（**c2a：Critic → Actor**）
 - **思路**：先学习值函数（Q 或 VVV），再用 **greedy / ϵ\epsilonϵ-greedy / softmax** 从值函数**导出**策略。
 - **代表**：MC Control、SARSA、Expected SARSA、Q-learning、DQN（+ 目标网络/重放/Double-Q）。
 - **优点**：离散动作简单高效。
 - **局限**：连续动作 arg⁡max⁡aQ\arg\max_a Qargmaxa​Q 困难；策略不可直接正则化。
 
-## 2.2 Policy-based（**a2c：Actor → Critic**）
+ 2.2 Policy-based（**a2c：Actor → Critic**）
 
-## 2.3 Markov decision process
-
-
+ 2.3 Markov decision process
 
 
 
 
 
 
-2. ## 基础 第二版本
+
+
+2.  基础 第二版本
     
 
 https://www.bilibili.com/video/BV1rooaYVEk8/?spm_id_from=333.1387.homepage.video_card.click&vd_source=7edf748383cf2774ace9f08c7aed1476
 
-1. ### Top down
+1.  Top down
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=OTg4YmU4M2ZiMDIyZjZlNGRkOTUxMDlkOWRkOWIwOWRfNGNqa2h4dlhEQWZaeTZ4OHEwSnpYRnEwYnNsYXlUbzhfVG9rZW46THZNc2JmeFZ0b2tzeUV4SDdBWmxzQ3NPZ1FkXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
-2. ### Markov decision process
+2.  Markov decision process
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=MWI2ZTdlMDBlYTBjMDE2ODAzM2IwZWQ0NTVlMGQ3ZjFfVXUwOHhMSXE3NU5laDZGT0lPVUs0VTl5YjNBMUpUc3VfVG9rZW46RW55SGJFRVdOb2ZFdHN4R3ROQmxDR3YzZ1ZmXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
-3. ### State Value & Action Value
+3.  State Value & Action Value
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=Yjc3NmZjNGVjMjQyMGY4ODE4ZmQwM2JkYTBmNTdjMGRfMzBUQ2x3WmU0NU9MUWhmWE5Od0pHdXFHb0FuUURiQ0ZfVG9rZW46WE9DOWJEOTBIbzBMQlB4RlQ3emxhcmkxZ2ZjXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
@@ -86,15 +86,15 @@ A(s,a)=Q(s,a)−V(s)
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=MWJiMzcyN2VjY2MxNzFiMmJjNjhhN2RhM2M1MTBjZjRfaG1oYWhwRFVzR0pneGxoc0prNFQ5VWVnRlhjV1VoZXBfVG9rZW46U1o2MWJ5bTdnbzdrM3R4czVWTWxGVmRkZ3lkXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
-4. ### Value based：MC & TD
+4.  Value based：MC & TD
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=OTgxYjE5MmY3MDE1ODQzNTAwOGUzNDA5ODAyZTE1NmNfQTRBR2pmWkE4SklxcXdEaFlIN2EyWHpQSk42ZVZXUndfVG9rZW46S1R2dWJQYlZLb0tXQ0R4NmNjYmx1OFdoZ3hnXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
-1. #### Monte Carlo
+1.  Monte Carlo
     
 
-2. ##### REINFORCE（policy based）
+2. # REINFORCE（policy based）
     
 
 **REINFORCE 就是最原生的 Monte Carlo 方法**——它用整段回报（return）做无偏的梯度估计、没有 critic、也不做 bootstrapping。
@@ -174,10 +174,10 @@ $$\boxed{\ J(\theta)\;\;\text{定义为其无偏 MC 估计对应的目标：}\;\
 
   
 
-2. #### 降方差：Baseline → Advantage → GAE
+2.  降方差：Baseline → Advantage → GAE
     
 
-3. ###### Advantage 的由来
+3.  Advantage 的由来
     
 
 REINFORCE 无偏但方差大，学习抖。说白了就是G一般情况下可能是一个非常大的值，我们希望降低梯度的幅度，所以需要对他进行normalization，所以才有了baseline这个东西。也就是Advantage= Gt−V(st)。我们用V(st)来估计未来的期望奖励是多少，也就是平均值，减掉了之后就是X-E[X]，看到没有，非常像是normalization了一下。这里我们才第一次引入了A
@@ -188,21 +188,21 @@ REINFORCE 无偏但方差大，学习抖。说白了就是G一般情况下可能
 
 相当于把Gt换成 $$r_{t+1} \;+\; \gamma\,V_\phi(s_{t+1})$$
 
-2. ###### (GAE)Generalized Advantage Estimation
+2.  (GAE)Generalized Advantage Estimation
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=MGNhZWEwMThkNzZmNWRiOWQ5ZGZhNDlkMTY5YTQ0ZTJfU0Z2ZGNJYlVTYUVJV2RaZkZ5bUtZbHdkM3dZeHRnN2tfVG9rZW46RUh3S2JUanQzb1Z5cXR4bGNPZWxBSkE5Z3ZnXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
 实际值-期望值=At advantage，优势，如果>0，说明在当前s的情况下，选择action是有利的，如果<0，则是由penalty
 
-3. ###### A，V，Q的关系
+3.  A，V，Q的关系
     
 
 本质就是A是由G - baseline得出的，其中G,baseline可以是r+Q(st+1,at+1), Q(st,at)或者r+V(st+1), V(s)都行.
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=MThiMmUyOTMwN2M1NTBiMmRlMWIwYzY3OWUzY2Q5ZjRfUXl1aU9FcUFaMU8zRU43R1lENDRxa0hOeWFYaDBoZmRfVG9rZW46WTZ3N2JMYXo2b0dLaEt4UmUya2x4NUdSZ1pmXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
-4. ###### 如何理解方差和偏差
+4.  如何理解方差和偏差
     
 
 - **Monte Carlo**：
@@ -244,7 +244,7 @@ REINFORCE 无偏但方差大，学习抖。说白了就是G一般情况下可能
     - 但方差很小（结果都接近 5）
         
 
-3. #### Temporal Difference
+3.  Temporal Difference
     
 
 note：
@@ -286,7 +286,7 @@ loop for t = 0,1,2,...:
     # (+ optional entropy bonus on θ)
 ```
 
-4. #### SARSA and Q learning（TD）
+4.  SARSA and Q learning（TD）
     
 
 TD的算法有SARSA and Q learning
@@ -360,7 +360,7 @@ TD的算法有SARSA and Q learning
         1. 用梯度下降更新神经网络参数 θ。
             
 
-5. #### On policy and Off policy
+4.  On policy and Off policy
     
 
 如果behavior和target policy是一样的方法，比如SARSA，那么就是on policy，如果不一样那么就是off policy
@@ -401,7 +401,7 @@ TD的算法有SARSA and Q learning
 
   
 
-2. ### Policy based：Policy Gradient
+2.  Policy based：Policy Gradient
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=OWViYmVhNDIxNTM3NzAxNmQyYThlMGYyYzJiYTlkNzZfWW1pMDI1SzBDWnliT2tVSmpDT09hd0NKYWk4WTZyOWVfVG9rZW46SlhDWmJZSjY5b1dzeFV4c2tIemxjZ2RzZ1RkXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
@@ -425,7 +425,7 @@ $$p_\theta(\tau)=\rho(s_0)\prod_{t=0}^{T-1}\pi_\theta(a_t|s_t)\,P(s_{t+1}|s_t,a_
 
 $$J(\theta)=\sum_{\tau} p_\theta(\tau)\,R(\tau) $$
 
-1. #### Reinforce and ACtor Critic
+1.  Reinforce and ACtor Critic
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=ODQ5Njc5ZGM5ODFiOGY4YjAzMWYwNDM1MjM0MWY1NWVfUGxjUTl3Mlk1RUV4RVpPbzFLNDZhVUJYOHkzZDg2aHpfVG9rZW46UDJWbmJUOFFCb1RvTWd4OVNjNmxuQUJYZ3hnXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
@@ -439,14 +439,14 @@ $$J(\theta)=\sum_{\tau} p_\theta(\tau)\,R(\tau) $$
     3. baseline就是李宏毅actor critic的方式
         
 
-2. ### The problem of policy Gradient
+2.  The problem of policy Gradient
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=YTNiZGYyODlkZjg3NDZlMzdiM2ZkMTVlOWMzNzA0NmJfM1p0N2lqeE1ZbVlwSXJadmJrcUlteXlXSTBWQzhHczdfVG9rZW46VFRHc2JsUEc3bzlpMjV4YjAwMWw5SW1MZ0xmXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
 
 我们不希望参数一次性更新的太大，所以我们希望参数更新的值小于一个阈值
 
-1. #### Important sampling
+1.  Important sampling
     
 
 我们有p(x),f(x), 我们想要取从p(x)采样很困难的话，我们可以引入一个q(x)然后，然后对x求积分。
@@ -470,7 +470,7 @@ $$J(\theta)=\sum_{\tau} p_\theta(\tau)\,R(\tau) $$
 
 思考：
 
-1. ##### 为什么Q learning不用这个？（说实话没搞懂这个）https://zhuanlan.zhihu.com/p/346433931
+1. # 为什么Q learning不用这个？（说实话没搞懂这个）https://zhuanlan.zhihu.com/p/346433931
     
     1. 直觉上想着，我通过不同的policy采样，那么我的Q值也是不一样的呀，这样不会影响其在更新时的分布吗？ $$Q_t - (r + Q_{t+1})$$比如Vt+1很大，Vt很小，我们让他们分布一样不好吗？答案是同分布”没意义，甚至有害。**Bellman 不动点会被改写**：如果你对 Qt 或 yt 施加与样本相关的非线性“归一化”，就相当于改了目标函数，可能不再收敛到 Q
         
@@ -478,7 +478,7 @@ $$J(\theta)=\sum_{\tau} p_\theta(\tau)\,R(\tau) $$
       $$\mathbb{E}_{(s,a)\sim d_\mu}\big[\big(y(s,a)-Q_\theta(s,a)\big)^2\big], \quad y=r+\gamma \max_{a'}Q_{\bar\theta}(s',a')$$
     
 
-2. #### Trust region policy optimization(细节还没有研究)
+2.  Trust region policy optimization(细节还没有研究)
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=Nzk1YmJkN2RiZjYzM2U3MGYxNmNiZjI3MTE1NzAzZjJfSVdYaUo4MzU5QTU5RFEwOENUeVdoNU1JUjhiOW5USjJfVG9rZW46WjF1eWJpdThub2MyRHB4TWdCd2xPYzd2Z0lkXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
@@ -502,12 +502,12 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
 
   A这个部分为直接把期望写成公式的形式，下面为等价转换的形式，也就是我们公式中使用给的形式。
 
-7. ### PPO
+7.  PPO
     
 
   
 
-8. #### 公式
+8.  公式
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=MTEwMTFlNTI2NTczNTc2Njg5MTFhMjc2MmU0OGYzM2VfNWdMTkFyMUdWeUZROTM5cEVWTU9LZEFndjJvdURZMWhfVG9rZW46UWdJUGI5VXRmb3ZwbTR4TXducGxMV1A5Z0tiXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
@@ -541,7 +541,7 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
     1. 如果超出了一个范围就直接截断，也是为了稳定性
         
 
-5. #### 训练
+5.  训练
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=Zjc1NWQ3ZWQ1MDBiZTFkMWY2N2U3ZTAwYjU5YmU5YjVfZWM2ZnFrV3p1S0xWMHZDcm1Wekk5VjVHaHNUMmNYVFNfVG9rZW46REJ5UmJPR050b052V1d4enBqTGxOOWxlZ3ZoXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
@@ -695,7 +695,7 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
     5. 结束后把 $$\pi_{\text{old}}\leftarrow \pi_{\theta}$$，进入下一批。
         
 
-5. ### PPO LLM
+5.  PPO LLM
     
 
 ┌──────────────────────────────┐
@@ -772,7 +772,7 @@ $$J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_
 
 └──────────────────────────────┘
 
-1. #### PPO
+1.  PPO
     
 
 ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=MmUyZDE5MWE3ZTNmOGFkY2M2OGRiYTkyMjBhZDY4ZDVfS3dBYlZ5bEltZE84cW0wb2ljQlYyTFpjbEtzY3hvNE9fVG9rZW46STFWdGJ5ZXZlb1kyb0l4Z2lBYmw1VzkxZzZiXzE3NTkwNTY1NDA6MTc1OTA2MDE0MF9WNA)
