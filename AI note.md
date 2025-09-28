@@ -791,20 +791,9 @@ $J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_i
 	$$
 	
 	（若改用“KL in loss”，则此处 $r_{i,t}$ 不含 KL，改在第 5) 步加入 $\beta\,\mathrm{KL}(\pi_\theta\|\pi_{\mathrm{ref}})$。两种写法择一即可。）
-	
-	- 若 πold(at∣st)  <  πref(at∣st)\pi_{\text{old}}(a_t|s_t)\;<\;\pi_{\text{ref}}(a_t|s_t)πold​(at​∣st​)<πref​(at​∣st​)，则
-    
-    log⁡πold−log⁡πref<0 ⇒ rtKL>0,\log \pi_{\text{old}}-\log \pi_{\text{ref}}<0\ \Rightarrow\ r_t^{\mathrm{KL}}>0,logπold​−logπref​<0 ⇒ rtKL​>0,
-    
-    这会把这条样本的 **优势 A^t\hat A_tA^t​** 往正方向推。
-	    
-- PPO 的 actor 更新（未触发 clip 时）对这一条样本的方向是
-    
-    ∇θ(ρtA^t) ∝ A^t ∇θlog⁡πθ(at∣st),\nabla_\theta\big(\rho_t\hat A_t\big)\ \propto\ \hat A_t\ \nabla_\theta \log\pi_\theta(a_t|s_t),∇θ​(ρt​A^t​) ∝ A^t​ ∇θ​logπθ​(at​∣st​),
-    
-    **A^t>0\hat A_t>0A^t​>0** 就把 **πθ(at∣st)\pi_\theta(a_t|s_t)πθ​(at​∣st​)** **调大**（更愿意在这个上下文里说出 `zero`）。
 
-4. Critic 目标：TD、GAE 与回报（常取 $\gamma=1$）
+
+3. Critic 目标：TD、GAE 与回报（常取 $\gamma=1$）
 
 	设 $V_\phi(s_{i,T_i+1})=0$。
 	
@@ -824,7 +813,7 @@ $J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_i
 	$$\hat A \leftarrow \frac{\hat A-\mathrm{mean}(\hat A)}{\mathrm{std}(\hat A)+\varepsilon}.$$
 
 
-5. Actor（PPO-clip）
+4. Actor（PPO-clip）
 	
 	策略概率比：
 	$$
@@ -840,7 +829,7 @@ $J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_i
 	$$
 
 
-6. 其他项：Value / Entropy /（可选）KL-in-loss
+5. 其他项：Value / Entropy /（可选）KL-in-loss
 	
 	Value 损失：
 	$$
