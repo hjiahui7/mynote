@@ -797,7 +797,7 @@ $J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_i
     log⁡πold−log⁡πref<0 ⇒ rtKL>0,\log \pi_{\text{old}}-\log \pi_{\text{ref}}<0\ \Rightarrow\ r_t^{\mathrm{KL}}>0,logπold​−logπref​<0 ⇒ rtKL​>0,
     
     这会把这条样本的 **优势 A^t\hat A_tA^t​** 往正方向推。
-    
+	    
 - PPO 的 actor 更新（未触发 clip 时）对这一条样本的方向是
     
     ∇θ(ρtA^t) ∝ A^t ∇θlog⁡πθ(at∣st),\nabla_\theta\big(\rho_t\hat A_t\big)\ \propto\ \hat A_t\ \nabla_\theta \log\pi_\theta(a_t|s_t),∇θ​(ρt​A^t​) ∝ A^t​ ∇θ​logπθ​(at​∣st​),
