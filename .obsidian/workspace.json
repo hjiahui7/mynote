@@ -177,9 +177,19 @@
               "icon": "git-pull-request",
               "title": "Source Control"
             }
+          },
+          {
+            "id": "5a0e15f93e4123aa",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {},
+              "icon": "spreadsheet",
+              "title": "Advanced Tables"
+            }
           }
         ],
-        "currentTab": 4
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
@@ -200,8 +210,10 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "608f1de6c9304de7",
+  "active": "1834e6772ce95156",
   "lastOpenFiles": [
+    "Pasted image 20250929040154.png",
+    "Pasted image 20250929040152.png",
     "ori_ainote.docx",
     "ori_ainote.md",
     "AI note.md",
@@ -221,7 +233,6 @@
     "Attachments/ori_ainote 854.png",
     "Attachments/ori_ainote 853.png",
     "Attachments/ori_ainote 852.png",
-    "Attachments/ori_ainote 851.png",
     "Attachments",
     "README.md",
     "AI笔记 (1).md",

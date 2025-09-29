@@ -4391,3 +4391,9 @@ clip模型提取text和img features
 
 提取5个frame
 
+
+| dsadsadasddddddsadddddddddddddddddffffd<br> | ![[Pasted image 20250929040154.png]]<br>![[Pasted image 20250929040152.png]]<br> |
+| ------------------------------------------- | -------------------------------------------------------------------------------- |
+|                                             |                                                                                  |
+
+
