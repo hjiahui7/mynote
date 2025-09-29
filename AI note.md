@@ -869,3 +869,146 @@ $$
 	- 进入下一轮：用新的 $\pi_{\mathrm{old}}$ 重新 rollout。
 
 【补充】若要在文本中穿插示例 token（如 `␠zero`）的单步展开，直接把 $a_{i,t}$ 置为该 token，并在上式逐步代入即可。
+
+
+
+
+
+
+* 提示（问题）  
+    $q=$ “eric has one banan”
+    
+* 由 **行为策略**（本轮冻结快照） $\pi_{\text{old}}$ 生成的回复 token 列表  
+    $o_{1:T}=$ “␠No”, “,”, “␠yuxuan”, “␠steal”, “␠it”, “,”, “␠so”, “␠eric”, “␠has”, “␠zero”, “.” …  
+    说明：LLM 是按 **token** 发射概率，**每个 token** 的条件是“提示+先前已生成的所有 token 前缀”。  
+    记每步状态 $s_t=(q, o_{<t})$，动作 $a_t=o_t$。
+    
+
+* * *
+
+1. 采样（rollout，来自 $\pi_{\text{old}}$）
+
+逐步缓存 **对数概率**（只对生成段，mask 掉提示 token）：
+
+* 第 1 步（发第一个 token “␠No”）：  
+    $\log \pi_{\text{old}}(\text{“␠No”}\mid s_1{=}(q))$
+    
+* 第 2 步（发 “,”）：  
+    $\log \pi_{\text{old}}(\text{“,”}\mid s_2{=}(q,\text{“␠No”}))$
+    
+* … 每步都存一份；同时再前向一次 **参考模型** $\pi_{\text{ref}}$ 得  
+    $\log \pi_{\text{ref}}(a_t\mid s_t)$（用来做 KL）。
+    
+
+> 注：整句的序列概率是乘积 $\prod_{t=1}^{T}\pi(\,o_t\mid s_t\,)$，但 PPO 的更新都发生在 **逐 token** 的这些条件概率上。
+
+* * *
+
+# 4 即时奖励（reward shaping）
+
+常见做法：**把 KL 放进奖励**（也有人放进 loss，见后述等价项）。
+
+* token 级 KL 估计（单样本）：  
+    $\mathrm{kl}_t \approx \log \pi_{\text{old}}(a_t\mid s_t)-\log \pi_{\text{ref}}(a_t\mid s_t)$
+    
+* 逐步即时奖励
+    
+
+$$r_t=\begin{cases}  
+-\beta\cdot \mathrm{kl}_t, & t<T \\  
+R_\psi(q,o_{1:T})\;-\beta\cdot \mathrm{kl}_T, & t=T  
+\end{cases}$$
+
+其中 $R_\psi$ 是奖励模型（对整句打分）。
+
+> 例子里，最后一句“␠zero.” 若被 RM 判为“事实更好+风格更好”，则 $R_\psi$ 较高；前面各步仅有 KL 惩罚，鼓励输出别偏离参考模型太远。
+
+* * *
+
+# 5 Critic 目标（GAE 基于本批数据）
+
+用价值头 $V_\phi$（同一 Transformer 干线或独立）：
+
+* TD 残差：  
+    $\delta_t=r_t + \gamma V_\phi(s_{t+1})-V_\phi(s_t)$（文本里常 $\gamma=1$）
+    
+* GAE 逆序递推：  
+    $\hat A_t=\delta_t+\gamma\lambda\,\hat A_{t+1}$, $\hat A_{T+1}=0$
+    
+* 回报：  
+    $\hat G_t=\hat A_t+V_\phi(s_t)$
+    
+* **只对本批**标准化优势：  
+    $\hat A \leftarrow (\hat A-\mathrm{mean})/(\mathrm{std}+\epsilon)$
+    
+
+* * *
+
+# 6 Actor（PPO-clip）逐 token 更新
+
+在线策略（待优化） $\pi_\theta$ 前向得到 $\log \pi_\theta(a_t\mid s_t)$，构造 **概率比**：
+
+$$\underbrace{\rho_t}_{\text{IS 比值}} \;=\;  
+\frac{\pi_\theta(a_t\mid s_t)}{\pi_{\text{old}}(a_t\mid s_t)}  
+=\exp\!\big(\log\pi_\theta(a_t\mid s_t)-\log\pi_{\text{old}}(a_t\mid s_t)\big)$$
+
+* 以 **“␠No”** 那步为例：  
+    $\rho_1=\dfrac{\pi_\theta(\text{“␠No”}\mid q)}{\pi_{\text{old}}(\text{“␠No”}\mid q)}$
+    
+* 以 **“␠yuxuan”** 那步为例（已含前缀 “␠No,”）：  
+    $\rho_3=\dfrac{\pi_\theta(\text{“␠yuxuan”}\mid q,\text{“␠No”},\text{“,”})}{\pi_{\text{old}}(\text{“␠yuxuan”}\mid q,\text{“␠No”},\text{“,”})}$
+    
+
+**PPO-clip 的策略目标（对生成 token 求平均）：**
+
+$$L_{\text{policy}}(\theta)=  
+\frac{1}{M}\sum_{t}\min\Big(\rho_t\hat A_t,\;  
+\mathrm{clip}(\rho_t,1-\epsilon,1+\epsilon)\,\hat A_t\Big)$$
+
+直觉：若“␠zero”那几步的 $\hat A_t>0$，就提高其 $\pi_\theta(a_t\mid s_t)$；若某步 $\hat A_t<0$，就降低；**clip** 防止离 $\pi_{\text{old}}$ 太远。
+
+* * *
+
+# 7 Critic/熵/KL 等辅助项
+
+* 价值损失：$\displaystyle L_{\text{value}}(\phi)=\frac{1}{M}\sum_t \tfrac12\big(V_\phi(s_t)-\hat G_t\big)^2$  
+    （可用 value-clip 稳定）
+    
+* 熵奖励（鼓励多样性）：$\displaystyle L_{\text{ent}}(\theta)=-\frac{1}{M}\sum_t \mathcal H(\pi_\theta(\cdot\mid s_t))$
+    
+* （可选）把 **参考 KL** 放到 loss：  
+    $\displaystyle L_{\text{KL}}(\theta)=\frac{1}{M}\sum_t \mathrm{KL}\big(\pi_\theta(\cdot\mid s_t)\,\|\,\pi_{\text{ref}}(\cdot\mid s_t)\big)$
+    
+
+**总损失（最小化形式）**
+
+$$\min_{\theta,\phi}\;\;-\;L_{\text{policy}}  
++\;c_v\,L_{\text{value}}  
+-\;c_H\,L_{\text{ent}}  
++\;\beta\,L_{\text{KL}}\;.$$
+
+> 若你选择 **“KL 进奖励”** 的方案（第 2 步），就**不要**再把同一 KL 重复加进 loss；两者效果等价，择一即可。
+
+* * *
+
+# 8 小批多轮 & 刷新行为策略
+
+* 把本批生成 token 展平、打乱，做 $K$ 个 epoch 的小批 SGD（AdamW，梯度裁剪等）。
+    
+* 结束后 **丢弃这批数据**，更新行为策略：$\pi_{\text{old}}\leftarrow \pi_\theta$，进入下一轮采样。
+    
+
+* * *
+
+## 8.1 关键点回顾（对你关心的“条件到底是谁”）
+
+* $\pi(\text{“␠No”}\mid q)$：**单个 token** 的条件概率（第一步只依赖提示）。
+    
+* $\pi(\text{“␠yuxuan”}\mid q,\text{“␠No”},\text{“,”})$：**单个 token**，但条件是**整段前缀**（一堆词/子词）。
+    
+* 整句的概率是这些 **单步条件概率的乘积**；PPO 的比值 $\rho_t$ 与优势 $\hat A_t$ 都是 **逐 token** 地作用。
+    
+* 这就是为什么我们在例子里按 “No → , → yuxuan → … → zero” 每一步都能写出对应的  
+    $\pi_{\text{old}}(a_t\mid s_t),\ \pi_{\text{ref}}(a_t\mid s_t),\ \pi_\theta(a_t\mid s_t)$、$\rho_t$、$\hat A_t$ 与损失项。
+
+* * *
