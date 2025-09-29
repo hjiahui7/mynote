@@ -4402,3 +4402,5 @@ clip模型提取text和img features
 | dsadsadasdddddddddddddddddddddddddddddddddddddddddd... | <img src="Pasted image 20250929040154.png" width="800"> <img src="Pasted image 20250929040152.png" width="500"> |
 |                                                        |                                                                                                                 |
 |                                                        |                                                                                                                 |
+
+

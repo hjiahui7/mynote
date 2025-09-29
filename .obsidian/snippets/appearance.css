@@ -1,1 +1,5 @@
 .MathJax {font-size: 1.4em;}
+.markdown-rendered table td {
+  white-space: normal;   /* 允许换行 */
+  word-break: break-word; /* 长单词或长串强制断行 */
+}
