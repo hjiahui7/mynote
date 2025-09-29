@@ -757,150 +757,28 @@ $J(\theta') - J(\theta) \;\approx\; \frac{1}{N} \sum_{i=1}^{N} \;\sum_{t=0}^{T_i
 
 #### 3.4.1.2 PPO 一轮训练
 
-【任务/示例】
-	Prompt $q_i=$ "Eric has a banana"；用冻结的 $\pi_{\mathrm{old}}$ 生成回复
-	$o_{i,1:T_i}=$ "␠No", ",", "␠Yuxuan", "␠steal", "␠it", ",", "␠so", "␠Eric", "␠has", "␠zero", "。"
-1. 记号
-	- 状态与动作：
-	  $$s_{i,t}=(q_i,\, o_{i,<t}),\quad a_{i,t}=o_{i,t}.$$
-	- 策略与价值：冻结行为策略 $\pi_{\mathrm{old}}$，当前可训练策略 $\pi_\theta$，参考模型 $\pi_{\mathrm{ref}}$，价值网络 $V_\phi$。
-	- 仅对“生成段”计算损失（prompt token 被 mask）。
+1. 准备数据
+	- 提示（问题）  
+	    - $q=$ “eric has one banan”
+	    
+	- 由 **行为策略**（本轮冻结快照） $\pi_{\text{old}}$ 生成的回复 token 列表  
+	    - $o_{1:T}=$ “␠No”, “,”, “␠yuxuan”, “␠steal”, “␠it”, “,”, “␠so”, “␠eric”, “␠has”, “␠zero”, “.” …  
+	    - 说明：LLM 是按 **token** 发射概率，**每个 token** 的条件是“提示+先前已生成的所有 token 前缀”。  
+	    - 记每步状态 $s_t=(q, o_{<t})$，动作 $a_t=o_t$。
 
 
-2. Rollout：用 $\pi_{\mathrm{old}}$ 逐 token 生成并缓存对数概率
-
-	对每个样本 i、每个生成步 $t=1..T_i$，缓存：
-	$$\log \pi_{\mathrm{old}}(a_{i,t}\mid s_{i,t}),\qquad \log \pi_{\mathrm{ref}}(a_{i,t}\mid s_{i,t}).$$
+2. 采样（rollout，来自 $\pi_{\text{old}}$）
+	- 逐步缓存 **对数概率**（只对生成段，mask 掉提示 token）：
 	
-	示例中的 “␠zero” 步：
-	$$s_{i,t}=(q_i,\text{`␠No`},`,`,\ldots,\text{`␠has`}),\quad a_{i,t}=\text{`␠zero`}.$$
-
-
-3. 奖励整形（KL in reward）+ 末端奖励模型
-	
-	定义单样本 KL 近似：
-	$$\mathrm{KL}_{i,t}\ \approx\ \log \pi_{\mathrm{old}}(a_{i,t}\!\mid s_{i,t})\;-\;\log \pi_{\mathrm{ref}}(a_{i,t}\!\mid s_{i,t}).$$
-	
-	逐步即时奖励：
-	$$
-	r_{i,t}=
-	\begin{cases}
-	-\beta\,\mathrm{KL}_{i,t}, & t<T_i,\\[4pt]
-	R_\psi\!\big(q_i,\,o_{i,1:T_i}\big)\;-\;\beta\,\mathrm{KL}_{i,T_i}, & t=T_i.
-	\end{cases}
-	$$
-	
-	（若改用“KL in loss”，则此处 $r_{i,t}$ 不含 KL，改在第 5) 步加入 $\beta\,\mathrm{KL}(\pi_\theta\|\pi_{\mathrm{ref}})$。两种写法择一即可。）
-
-
-3. Critic 目标：TD、GAE 与回报（常取 $\gamma=1$）
-
-	设 $V_\phi(s_{i,T_i+1})=0$。
-	
-	TD 残差：
-	$$\delta_{i,t}=r_{i,t}+\gamma\,V_\phi(s_{i,t+1})-V_\phi(s_{i,t}).$$
-	
-	GAE 递推（从后往前）：
-	$$
-	\hat A_{i,T_i}=\delta_{i,T_i},\qquad
-	\hat A_{i,t}=\delta_{i,t}+\gamma\lambda\,\hat A_{i,t+1}\quad (t=T_i-1,\ldots,1).
-	$$
-	
-	Value 的监督目标（回报）：
-	$$\hat G_{i,t}=\hat A_{i,t}+V_\phi(s_{i,t}).$$
-	
-	对本批所有“生成 token”的优势做标准化（展平总数为 $M=\sum_i T_i$）：
-	$$\hat A \leftarrow \frac{\hat A-\mathrm{mean}(\hat A)}{\mathrm{std}(\hat A)+\varepsilon}.$$
-
-
-4. Actor（PPO-clip）
-	
-	策略概率比：
-	$$
-	\rho_{i,t}
-	=\frac{\pi_\theta(a_{i,t}\!\mid s_{i,t})}{\pi_{\mathrm{old}}(a_{i,t}\!\mid s_{i,t})}
-	=\exp\!\Big(\log\pi_\theta(a_{i,t}\!\mid s_{i,t})-\log\pi_{\mathrm{old}}(a_{i,t}\!\mid s_{i,t})\Big).
-	$$
-	
-	策略目标（在所有生成 token 上取平均）：
-	$$
-	L_{\mathrm{policy}}(\theta)=
-	\frac{1}{M}\sum_{i,t}\min\!\Big(\rho_{i,t}\,\hat A_{i,t},\ \mathrm{clip}(\rho_{i,t},1-\epsilon,1+\epsilon)\,\hat A_{i,t}\Big).
-	$$
-
-
-5. 其他项：Value / Entropy /（可选）KL-in-loss
-	
-	Value 损失：
-	$$
-	L_{\mathrm{value}}(\phi)=\frac{1}{M}\sum_{i,t}\frac{1}{2}\Big(V_\phi(s_{i,t})-\hat G_{i,t}\Big)^2.
-	$$
-	
-	熵正则（你的正确格式）：
-	$$
-	H\!\big(\pi_\theta(\cdot\mid s_{i,t})\big) \;=\; -\sum_a \pi_\theta(a\mid s_{i,t}) \,\log \pi_\theta(a\mid s_{i,t}).
-	$$
-	加入总损失的熵项：
-	$$
-	L_{\mathrm{ent}}(\theta) \;=\; -\,\frac{1}{M}\sum_{i,t} H\!\big(\pi_\theta(\cdot\mid s_{i,t})\big).
-	$$
-	
-	（可选）若不用“KL in reward”，采用“KL in loss”：
-	$$
-	L_{\mathrm{KL}}(\theta)=\frac{1}{M}\sum_{i,t}\mathrm{KL}\!\big(\pi_\theta(\cdot\mid s_{i,t})\ \|\ \pi_{\mathrm{ref}}(\cdot\mid s_{i,t})\big).
-	$$
-	
-	总损失（最小化；若 KL 已进奖励，则省略最后一项）：
-$$
-\min_{\theta,\phi}\quad
--\;L_{\mathrm{policy}}(\theta)\;+\;c_v\,L_{\mathrm{value}}(\phi)\;-\;c_H\,L_{\mathrm{ent}}(\theta)\;+\;\beta\,L_{\mathrm{KL}}(\theta).
-$$
-
-7. 训练细节（与图一致）
-	
-	- 将本批生成 token 展平、打乱，做 $K$ 个 epoch 的小批 SGD（AdamW；梯度裁剪）。
-	- 只在生成段上计算损失（prompt token mask）。
-	- 可自适应调 $\beta$ 以控制参考 KL 目标区间。
-
-8. 轮末
-	
-	- 丢弃本批数据；
-	- 刷新行为策略：$\pi_{\mathrm{old}}\leftarrow \pi_\theta$；
-	- 进入下一轮：用新的 $\pi_{\mathrm{old}}$ 重新 rollout。
-
-【补充】若要在文本中穿插示例 token（如 `␠zero`）的单步展开，直接把 $a_{i,t}$ 置为该 token，并在上式逐步代入即可。
-
-
-
-
-
-
-* 提示（问题）  
-    $q=$ “eric has one banan”
-    
-* 由 **行为策略**（本轮冻结快照） $\pi_{\text{old}}$ 生成的回复 token 列表  
-    $o_{1:T}=$ “␠No”, “,”, “␠yuxuan”, “␠steal”, “␠it”, “,”, “␠so”, “␠eric”, “␠has”, “␠zero”, “.” …  
-    说明：LLM 是按 **token** 发射概率，**每个 token** 的条件是“提示+先前已生成的所有 token 前缀”。  
-    记每步状态 $s_t=(q, o_{<t})$，动作 $a_t=o_t$。
-    
-
-* * *
-
-1. 采样（rollout，来自 $\pi_{\text{old}}$）
-
-逐步缓存 **对数概率**（只对生成段，mask 掉提示 token）：
-
-* 第 1 步（发第一个 token “␠No”）：  
-    $\log \pi_{\text{old}}(\text{“␠No”}\mid s_1{=}(q))$
-    
-* 第 2 步（发 “,”）：  
-    $\log \pi_{\text{old}}(\text{“,”}\mid s_2{=}(q,\text{“␠No”}))$
-    
-* … 每步都存一份；同时再前向一次 **参考模型** $\pi_{\text{ref}}$ 得  
-    $\log \pi_{\text{ref}}(a_t\mid s_t)$（用来做 KL）。
-    
-
-> 注：整句的序列概率是乘积 $\prod_{t=1}^{T}\pi(\,o_t\mid s_t\,)$，但 PPO 的更新都发生在 **逐 token** 的这些条件概率上。
+	- 第 1 步（发第一个 token “␠No”）：  
+	    - $\log \pi_{\text{old}}(\text{“␠No”}\mid s_1{=}(q))$
+	    
+	- 第 2 步（发 “,”）：  
+	    - $\log \pi_{\text{old}}(\text{“,”}\mid s_2{=}(q,\text{“␠No”}))$
+	    
+	- … 每步都存一份；同时再前向一次 **参考模型** $\pi_{\text{ref}}$ 得  
+	    - $\log \pi_{\text{ref}}(a_t\mid s_t)$（用来做 KL）。
+		- 注：整句的序列概率是乘积 $\prod_{t=1}^{T}\pi(\,o_t\mid s_t\,)$，但 PPO 的更新都发生在 **逐 token** 的这些条件概率上。
 
 * * *
 
