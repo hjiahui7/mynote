@@ -1009,6 +1009,3 @@ P(A|B)P(B) = P(B|A)P(A)
 
 
 
-## 8.2 边缘化marginal likelihood/evidence：
-
-例子2
