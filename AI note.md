@@ -890,3 +890,125 @@ $$\min_{\theta,\phi}\;\;-\;L_{\text{policy}}
     $\pi_{\text{old}}(a_t\mid s_t),\ \pi_{\text{ref}}(a_t\mid s_t),\ \pi_\theta(a_t\mid s_t)$、$\rho_t$、$\hat A_t$ 与损失项。
 
 * * *
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+10. # 生成模型基础
+    
+
+https://www.bilibili.com/video/BV1aE411o7qd/?p=162&vd_source=7edf748383cf2774ace9f08c7aed1476
+
+右边前六个属于固定的结构化的生成模型。比如GMM，他不能增加新的层等等，并且只能处理特定问题
+
+  
+
+后面的采用的是分部表示，并且使用深度学习多一些。
+
+![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=ZDAzMTI3NjRmMzU0YTNlZDc0MDcwOTM5MDAwY2VjZmVfVHdiNGJNSXFneTV4cW42YkZ1NTN2akZBZ3Zhc0FCZXVfVG9rZW46SmNSU2JORXFnb1lHYmJ4eGExZHVkSzZtc0toXzE3NTkxMzg1MTE6MTc1OTE0MjExMV9WNA)
+
+1. ## bayes
+    
+    1. ###   理解
+        
+    
+      随机试验（random experiment）：在相同条件下，对某[随机现象](https://zhida.zhihu.com/search?q=%E9%9A%8F%E6%9C%BA%E7%8E%B0%E8%B1%A1&zhida_source=entity&is_preview=1)进行的大量重复观测。例如抛骰子，观察其点数；抛硬币，看其哪一面向上。
+    
+      现在有长度为n且按照时间分布的序列，x1,x2,...,xt−1,xt,...,xn
+    
+    ![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=ZjE1ZjgwOWRjNzA2ZTg5Y2NhNTRhMWM3N2MyNzM4MjJfYU94S0RvMGthSHZnRnlCTlRSVWhwdDV5MTFQZG5mWE9fVG9rZW46S0lDcmJXTjRDb3VhbUd4OU0wNnUzdnVvczdlXzE3NTkxMzg1MTE6MTc1OTE0MjExMV9WNA)
+    
+      假如有一个动物园有很多动物，我要找马x，提前得知了马的数量比较多，并且我认为棕色z的动物为马的概率最高
+    
+    2. [先验概率](https://zhida.zhihu.com/search?q=%E5%85%88%E9%AA%8C%E6%A6%82%E7%8E%87&zhida_source=entity&is_preview=1)（p(z)根据以往经验和分析得到的概率）：
+        
+        1. 我认为p(z)为70%，意味着棕色为马的概率是70%
+            
+        2. diffusion中q(xt|xt−1)，给定前一时刻的xt−1预测当前时刻xt的概率
+            
+    3. 似然函数p(x|z)
+        
+        1. 我们找了一些棕色的动物，实际查看马的数量，然后算一个总体的概率
+            
+    4. 边缘概率p(x)
+        
+        1. 在所有动物园里面，马占了50%
+            
+    5. [后验概率](https://zhida.zhihu.com/search?q=%E5%90%8E%E9%AA%8C%E6%A6%82%E7%8E%87&zhida_source=entity&is_preview=1)（p(z|x) 指在得到结果的信息后重新修正的概率）：
+        
+        1. 知道动物是棕色的情况下，这只动物是马的概率
+            
+        2. diffusion中 p(xt−1|xt)，给定当前时刻的xt预测当前时刻xt−1的概率
+            
+    
+
+  
+
+2. ### 变换
+    
+
+![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=YTllNjY3M2FjODU0OTJjMjc3NDg0YWZiZDQ3M2I0ZDhfd21RVVBoaEFqOFE4NndPSUVCdkdpeTIwUUJmNVR4QVJfVG9rZW46QjFIQmI1RzBBbzNhcmR4bVN3Z3VKQUJBc3RoXzE3NTkxMzg1MTE6MTc1OTE0MjExMV9WNA)![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=YTUwNzRkYmMyNTBiNWZmMWFiODAwYTU2MjVkYzQxZTRfVlJRTzJONzl2d1pjVFBWUzB2UGhEa25kT0lJSVhQaTNfVG9rZW46WnNJQmJvOXpCb0N2MnJ4ZXoxT3VPejZGczVmXzE3NTkxMzg1MTE6MTc1OTE0MjExMV9WNA)
+
+  
+
+所以A里面发生B和B里面发生A的概率是一模一样的
+
+P(A|B)P(B) = P(B|A)P(A)
+
+  
+
+![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=ZmNkOGFlZjJlNzE4MzJhNDhlMzViZmNkYTBjNmJkODZfRlpVUFk0cVVjVDZnMHNiZ2tWOGJSTHZMbmcySGNLMmJfVG9rZW46TEdwbmJFVUZFb3NLa0J4MU9QTXVDZU5VczZlXzE3NTkxMzg1MTE6MTc1OTE0MjExMV9WNA)
+
+如果多一个C
+
+![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=NmY4ZGU2ZTNmOWU3NzcxZGRmMDk0MmQwYzIzNDliYzJfSGdRQzRIa1BVSkg1WE81b2RzZFJLNWtWaHVvM3NROFdfVG9rZW46SThpU2I0TmJmb1J4ekR4OGRMYXVEVWtkc2JmXzE3NTkxMzg1MTE6MTc1OTE0MjExMV9WNA)
+
+3. ### 边缘化marginal likelihood/evidence：
+    
+
+为什么要边缘化？
+
+边缘化的目的是为了简化问题，或者说，只关注那些我们感兴趣的变量。例如，在一些复杂的概率模型中，我们可能不关心所有变量的联合分布，而只需要知道某个特定变量的分布，这时我们就可以通过边缘化其他变量来简化问题。
+
+  
+
+![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=ZDYxNTk0N2FiZWYyZThmY2QwMGFiOGVlZGFhNDc1NWRfSnRBOU80a0dvalpGbVZodnlZcGF1WHE3YVBKYmoxTDNfVG9rZW46VVo2VGJHWEhFbzY5d1h4ZklWNnV3cjRBc0ZiXzE3NTkxMzg1MTE6MTc1OTE0MjExMV9WNA)
+
+![](https://susfq45zc9c0.sg.larksuite.com/space/api/box/stream/download/asynccode/?code=MjBhYjVhMzA3YjQxYTlhMGVlNzYzOGM2OWFjNTkzZGJfUkV1bWdHOFM1MXJEMXlMZUNabUdsbnU0QVVSTVQzRHNfVG9rZW46RUJFeGJ1T3pCb2lDTHh4dER4dHVrOEg1c1FXXzE3NTkxMzg1MTE6MTc1OTE0MjExMV9WNA)
+
+  
+
+例子2
+
+
+
+## 8.2 边缘化marginal likelihood/evidence：
+
+例子2
