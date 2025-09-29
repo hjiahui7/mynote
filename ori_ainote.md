@@ -4391,4 +4391,3 @@ clip模型提取text和img features
 
 提取5个frame
 
-
